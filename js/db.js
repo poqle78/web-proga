@@ -10,22 +10,36 @@ const dbPromise = new Promise((resolve, reject) => {
     openRequest.onerror = () => reject(openRequest.error);
 });
 
-async function createStudent(student) {
-    const db = await dbPromise;
+function requestToPromise(request) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction("students", "readwrite");
-        const request = transaction.objectStore("students").add(student);
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
     });
 }
 
-async function deleteStudent(student) {
+async function getStore(mode) {
     const db = await dbPromise;
-    return new Promise((resolve, reject) => {
-        const transaction = db.transaction("students", "readwrite");
-        const request = transaction.objectStore("students").delete(student.isu);
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
+    const transaction = db.transaction("students", mode);
+    return transaction.objectStore("students");
+}
+
+
+async function createStudent(student) {
+    const store = await getStore("readwrite");
+    return requestToPromise(store.add(student));
+}
+
+async function deleteStudent(student) {
+    const store = await getStore("readwrite");
+    return requestToPromise(store.delete(student.isu));
+}
+
+async function readStudent(isu) {
+    const store = await getStore("readonly");
+    return requestToPromise(store.get(isu));
+}
+
+async function updateStudent(student) {
+    const store = await getStore("readwrite");
+    return requestToPromise(store.put(student));
 }
