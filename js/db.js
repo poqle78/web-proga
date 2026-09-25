@@ -34,7 +34,7 @@ async function deleteStudent(student) {
     return requestToPromise(store.delete(student.isu));
 }
 
-async function readStudent(isu) {
+async function getStudent(isu) {
     const store = await getStore("readonly");
     return requestToPromise(store.get(isu));
 }
@@ -42,4 +42,9 @@ async function readStudent(isu) {
 async function updateStudent(student) {
     const store = await getStore("readwrite");
     return requestToPromise(store.put(student));
+}
+
+async function getAllStudent() {
+    const store = await getStore("readonly");
+    return requestToPromise(store.getAll());
 }
