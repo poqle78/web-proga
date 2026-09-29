@@ -1,44 +1,66 @@
 <!DOCTYPE html>
-<html lang="en-US">
-
+<html lang="ru">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Заявки</title>
-    <link href="css/table.css" rel="stylesheet" type="text/css">
+    <meta charset="UTF-8">
+    <title>Добавление студента</title>
+    <link rel="stylesheet" href="css/table.css">
 </head>
-
-
 <body>
-    <form action="" method="get" class="form-example">
-        <div class="form-example">
-            <label for="name">Enter your name: </label>
-            <input type="text" name="name" id="name" required />
-        </div>
-        <div class="form-example">
-            <label for="group">Enter your group: </label>
-            <input type="text" group="group" id="group" required />
-        </div>
-        <div class="form-example">
-            <label for="isu">Enter your isu: </label>
-            <input type="number" isu="isu" id="isu" required />
-        </div>
-        <div class="form-example">
-            <label for="dorm">Enter your dorm: </label>
-            <input type="number" dorm="dorm" id="dorm" required />
-        </div>
-        <div class="form-example">
-            <label for="room">Enter your room: </label>
-            <input type="number" room="room" id="room" required />
-        </div>
-        <div class="form-example">
-            <label for="date">Enter your date: </label>
-            <input type="date" date="date" id="date" required />
-        </div>
-        <div class="form-example">
-            <input type="submit" value="Subscribe!" />
-        </div>
-    </form>
-    <button onclick="location.href = 'index.html';" id="myButton" class="float-left submit-button">Home</button>
+<h1>Добавление студента</h1>
+<form name = "student" id="student-form">
+    <div class = "form-group">
+        <label>ФИО
+            <input id = "fullName" name="fullName" type="text" autocomplete="off">
+        </label>
+    </div>
 
+    <div class = "form-group">
+        <label>Группа
+            <input id = "group" name = "group" type = "text" autocomplete="off">
+        </label>
+    </div>
+
+    <div class = "form-group">
+        <label>ИСУ
+            <input id="ISU" name = "ISU" type = "number" autocomplete="off">
+        </label>
+    </div>
+
+    <div class = "form-group">
+        <label>Номер общежития
+            <input id="dormNum" name="dormNum" type="number" autocomplete="off">
+        </label>
+    </div>
+
+    <div class = "form-group">
+        <label>Комната
+            <input id="room" name="room" type="number" autocomplete="off">
+        </label>
+    </div>
+
+    <div class = "form-group">
+        <label>Дата заселения
+            <input id="date" name="date" type="date" autocomplete="off">
+        </label>
+    </div>
+
+    <div class = "form-group">
+        <label>Гражданство РФ
+            <input type="checkbox" name="isNoRu" value = "1">
+        </label>
+    </div>
+
+    <div class = "form-group">
+        <label>Заметки
+            <input id="notes" name="notes" type="text" autocomplete="off">
+        </label>
+    </div>
+
+    <div class = "form-actions">
+        <button type = "submit">Готово</button>
+    </div>
+
+</form>
+<script src="js/form.js"></script>
 </body>
+</html>
