@@ -50,3 +50,10 @@ h1 {
     border-radius: 4px;
     cursor: pointer;
 }
+
+span {
+    display: inline-block;
+    word-break: break-all;
+    max-width: 60%;
+    overflow-wrap: break-word;
+}
