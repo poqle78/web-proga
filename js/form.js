@@ -35,7 +35,7 @@ document.getElementById("student-form").addEventListener("submit", function (eve
 
     if(!group.value.trim()) {
         errorForm("Поле группа не может быть пустым", group);
-    } else if(!/^[A-Z][1-4][1-9]\d{2}$/.test(group.value)) {
+    } else if(!/^[A-Z][1-9][1-4]\d{2}$/.test(group.value)) {
         errorForm("Поле группа не соответствует требуемой форме", group);
     }
 
