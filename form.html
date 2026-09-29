@@ -1,66 +1,70 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <title>Добавление студента</title>
     <link rel="stylesheet" href="css/table.css">
 </head>
+
 <body>
-<h1>Добавление студента</h1>
-<form name = "student" id="student-form">
-    <div class = "form-group">
-        <label>ФИО
-            <input id = "fullName" name="fullName" type="text" autocomplete="off" placeholder="Иванов Иван Иванович">
-        </label>
-    </div>
+    <h1>Добавление студента</h1>
+    <form name="student" id="student-form">
+        <div class="form-group">
+            <label>ФИО
+                <input id="fullName" name="fullName" type="text" autocomplete="off" placeholder="Иванов Иван Иванович">
+            </label>
+        </div>
 
-    <div class = "form-group">
-        <label>Группа
-            <input id = "group" name = "group" type = "text" autocomplete="off" placeholder="P3220">
-        </label>
-    </div>
+        <div class="form-group">
+            <label>Группа
+                <input id="group" name="group" type="text" autocomplete="off" placeholder="P3220">
+            </label>
+        </div>
 
-    <div class = "form-group">
-        <label>ИСУ
-            <input id="ISU" name = "ISU" type = "number" autocomplete="off" placeholder="501676">
-        </label>
-    </div>
+        <div class="form-group">
+            <label>ИСУ
+                <input id="ISU" name="ISU" type="number" autocomplete="off" placeholder="501676">
+            </label>
+        </div>
 
-    <div class = "form-group">
-        <label>Номер общежития
-            <input id="dormNum" name="dormNum" type="number" autocomplete="off" placeholder="1">
-        </label>
-    </div>
+        <div class="form-group">
+            <label>Номер общежития
+                <input id="dormNum" name="dormNum" type="number" autocomplete="off" placeholder="1">
+            </label>
+        </div>
 
-    <div class = "form-group">
-        <label>Комната
-            <input id="room" name="room" type="number" autocomplete="off" placeholder="1108">
-        </label>
-    </div>
+        <div class="form-group">
+            <label>Комната
+                <input id="room" name="room" type="number" autocomplete="off" placeholder="1108">
+            </label>
+        </div>
 
-    <div class = "form-group">
-        <label>Дата заселения
-            <input id="date" name="date" type="date" autocomplete="off">
-        </label>
-    </div>
+        <div class="form-group">
+            <label>Дата заселения
+                <input id="date" name="date" type="date" autocomplete="off">
+            </label>
+        </div>
 
-    <div class = "form-group">
-        <label>Гражданство РФ
-            <input id="isNoRu" type="checkbox" name="isNoRu" value = "1">
-        </label>
-    </div>
+        <div class="form-group">
+            <label>Гражданство РФ
+                <input id="isNoRu" type="checkbox" name="isNoRu" value="1">
+            </label>
+        </div>
 
-    <div class = "form-group">
-        <label>Заметки
-            <input id="notes" name="notes" type="text" autocomplete="off">
-        </label>
-    </div>
+        <div class="form-group">
+            <label>Заметки
+                <input id="notes" name="notes" type="text" autocomplete="off">
+            </label>
+        </div>
 
-    <div class = "form-actions">
-        <button type = "submit">Готово</button>
-    </div>
+        <div class="form-actions">
+            <button type="submit">Готово</button>
+        </div>
 
-</form>
-<script src="js/form.js"></script>
+    </form>
+    <script src="js/db.js"></script>
+    <script src="js/form.js"></script>
 </body>
+
 </html>

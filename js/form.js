@@ -15,7 +15,7 @@ document.getElementById("student-form").addEventListener("submit", function (eve
     let dateValue = date.value;
     let notes = document.getElementById("notes");
 
-    const errorForm = (message,input) => {
+    const errorForm = (message, input) => {
         let errorEl = document.createElement("div");
         errorEl.className = 'error-text';
         errorEl.textContent = message;
@@ -25,39 +25,39 @@ document.getElementById("student-form").addEventListener("submit", function (eve
         isValid = false;
     }
 
-    if(!value) {
+    if (!value) {
         errorForm("Поле ФИО не может быть пустым", name);
-    } else if(!/^[A-Za-zА-Яа-яЁё]{2,}(?:[-\s][A-Za-zА-Яа-яЁё]{2,})*$/.test(value)) {
+    } else if (!/^[A-Za-zА-Яа-яЁё]{2,}(?:[-\s][A-Za-zА-Яа-яЁё]{2,})*$/.test(value)) {
         errorForm("Поле ФИО не соответствует требуемой форме", name);
     }
 
 
 
-    if(!group.value.trim()) {
+    if (!group.value.trim()) {
         errorForm("Поле группа не может быть пустым", group);
-    } else if(!/^[A-Z][1-9][1-4]\d{2}$/.test(group.value)) {
+    } else if (!/^[A-Z][1-9][1-4]\d{2}$/.test(group.value)) {
         errorForm("Поле группа не соответствует требуемой форме", group);
     }
 
-    if(!ISU.value.trim()) {
+    if (!ISU.value.trim()) {
         errorForm("Поле ИСУ не может быть пустым", ISU);
-    } else if(!/^[1-9]\d{5}$/.test(ISU.value)) {
+    } else if (!/^[1-9]\d{5}$/.test(ISU.value)) {
         errorForm("ИСУ не соответствует требуемой форме", ISU);
     }
 
-    if(!dormNum.value.trim()) {
+    if (!dormNum.value.trim()) {
         errorForm("Поле номер общежития не может быть пустым", dormNum);
-    } else if(!/^[1-5]$/.test(dormNum.value)) {
+    } else if (!/^[1-5]$/.test(dormNum.value)) {
         errorForm("Поле номер общежития не соответствует требуемой форме", dormNum);
     }
 
-    if(!room.value.trim()) {
+    if (!room.value.trim()) {
         errorForm("Поле комната не может быть пустым", room);
-    } else if(!/^(?:[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])$/.test(room.value)) {
+    } else if (!/^(?:[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])$/.test(room.value)) {
         errorForm("Поле комната не соответсвует требуемой форме", room);
     }
 
-    if(!date.value.trim()) {
+    if (!date.value.trim()) {
         errorForm("Поле дата не может быть пустым", date);
     } else {
         let picked = new Date(dateValue);
@@ -77,4 +77,11 @@ document.getElementById("student-form").addEventListener("submit", function (eve
         }
     }
 
+    if (isValid) {
+        let isUnru = document.getElementById("isNoRu").checked;
+        createStudent({
+            name: value, group: group.value.trim(), isu: parseInt(ISU.value.trim()), dorm: parseInt(dormNum.value.trim()), room: room.value.trim(), date: new Date(dateValue), isUnru: isUnru, note: notes.value.trim()
+        });
+        location.href = 'index.html'
+    }
 })
