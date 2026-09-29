@@ -144,5 +144,5 @@ async function updateTable() {
   }
   Object.entries(studentsMap).forEach(([_, value]) => { addToTable(value) });
 }
-
+updateTable();
 const intervalId = setInterval(updateTable, 1000);

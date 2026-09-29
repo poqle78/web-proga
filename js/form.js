@@ -1,3 +1,34 @@
+let student_name = document.getElementById("fullName");
+let group = document.getElementById("group");
+let ISU = document.getElementById("ISU");
+let dormNum = document.getElementById("dormNum");
+let room = document.getElementById("room");
+let date = document.getElementById("date");
+
+let notes = document.getElementById("notes");
+
+let isEdit = false;
+
+const url = new URL(document.URL);
+if (url.searchParams.get('isu')) {
+    isEdit = true;
+    document.getElementById("submit-btn").textContent = 'Применить';
+    (async () => {
+        student = await getStudent(parseInt(url.searchParams.get('isu')));
+        student_name.setAttribute('value', student.name);
+        group.setAttribute('value', student.group);
+        ISU.setAttribute('value', student.isu);
+        dormNum.setAttribute('value', student.dorm);
+        room.setAttribute('value', student.room);
+        date.value = student.date.toISOString().split('T')[0];
+        notes.setAttribute('value', student.note);
+        document.getElementById("isNoRu").checked = student.isUnru;
+
+    })();
+}
+
+
+
 document.getElementById("student-form").addEventListener("submit", function (event) {
     event.preventDefault();
 
@@ -5,15 +36,8 @@ document.getElementById("student-form").addEventListener("submit", function (eve
 
     let isValid = true;
 
-    let name = document.getElementById("fullName");
-    let value = name.value.trim()
-    let group = document.getElementById("group");
-    let ISU = document.getElementById("ISU");
-    let dormNum = document.getElementById("dormNum");
-    let room = document.getElementById("room");
-    let date = document.getElementById("date");
+    let value = student_name.value.trim();
     let dateValue = date.value;
-    let notes = document.getElementById("notes");
 
     const errorForm = (message, input) => {
         let errorEl = document.createElement("div");
@@ -26,12 +50,12 @@ document.getElementById("student-form").addEventListener("submit", function (eve
     }
 
     if (!value) {
-        errorForm("Поле ФИО не может быть пустым", name);
-    } else if(!/^(?:[A-ZА-ЯЁ][a-zа-яё]+|[a-zа-яё]+)(?:[-\s](?:[A-ZА-ЯЁ][a-zа-яё]+|[a-zа-яё]+)){1,}$/.test(value)) {
-        errorForm("Поле ФИО не соответствует требуемой форме", name);
+        errorForm("Поле ФИО не может быть пустым", student_name);
+    } else if (!/^(?:[A-ZА-ЯЁ][a-zа-яё]+|[a-zа-яё]+)(?:[-\s](?:[A-ZА-ЯЁ][a-zа-яё]+|[a-zа-яё]+)){1,}$/.test(value)) {
+        errorForm("Поле ФИО не соответствует требуемой форме", student_name);
     }
 
-    if(!group.value.trim()) {
+    if (!group.value.trim()) {
         errorForm("Поле группа не может быть пустым", group);
     } else if (!/^[A-Z][1-9][1-4]\d{2}$/.test(group.value)) {
         errorForm("Поле группа не соответствует требуемой форме", group);
@@ -77,9 +101,16 @@ document.getElementById("student-form").addEventListener("submit", function (eve
 
     if (isValid) {
         let isUnru = document.getElementById("isNoRu").checked;
-        createStudent({
-            name: value, group: group.value.trim(), isu: parseInt(ISU.value.trim()), dorm: parseInt(dormNum.value.trim()), room: room.value.trim(), date: new Date(dateValue), isUnru: isUnru, note: notes.value.trim()
-        });
+        if (!isEdit) {
+            createStudent({
+                name: value, group: group.value.trim(), isu: parseInt(ISU.value.trim()), dorm: parseInt(dormNum.value.trim()), room: room.value.trim(), date: new Date(dateValue), isUnru: isUnru, note: notes.value.trim()
+            });
+        } else {
+            updateStudent({
+                name: value, group: group.value.trim(), isu: parseInt(ISU.value.trim()), dorm: parseInt(dormNum.value.trim()), room: room.value.trim(), date: new Date(dateValue), isUnru: isUnru, note: notes.value.trim()
+            });
+        }
+
         location.href = 'index.html'
     }
 })
