@@ -92,6 +92,7 @@ async function updateTable() {
   const studentFromDB = await getAllStudent();
   const studentsMap = {};
   studentFromDB.forEach(element => {
+    element.date = element.date.toLocaleDateString('ru-RU');
     studentsMap[element.isu] = element
   });
   const tbody = document.getElementById('studsTable').getElementsByTagName('tbody')[0];
@@ -109,7 +110,7 @@ async function updateTable() {
     Object.entries(student).forEach(([key, value]) => { value.textContent = studentsMap[isu][key] });
     delete studentsMap[isu];
   }
-  Object.entries(studentsMap).forEach(([key, value]) => { addToTable(value) });
+  Object.entries(studentsMap).forEach(([_, value]) => { addToTable(value) });
 }
 
 const intervalId = setInterval(updateTable, 1000);
