@@ -84,6 +84,38 @@ function addToTable(student) {
   td.textContent = student.date;
   tr.appendChild(td);
 
+  td = document.createElement('td');
+  let button_d = document.createElement('button');
+  button_d.textContent = 'Удалить';
+  button_d.className = 'btn-delete';
+
+  button_d.onclick = function() {
+      deleteStudent(student.isu);
+      tr.remove();
+  };
+
+  let button_edit = document.createElement('button');
+  button_edit.textContent = 'Изменить';
+  button_edit.className = 'btn-edit';
+
+  button_edit.onclick = function() {
+      location.href = 'form.html?isu=' + student.isu;
+  };
+
+  let button_details = document.createElement('button');
+  button_details.textContent = 'Подробнее';
+  button_details.className = 'btn-details';
+
+  button_details.onclick = function() {
+      location.href = 'details.html?isu=' + student.isu;
+  };
+
+  td.appendChild(button_details);
+  td.appendChild(button_edit);
+  td.appendChild(button_d);
+  tr.appendChild(td);
+
+
   tbody.appendChild(tr);
 }
 
