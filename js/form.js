@@ -26,39 +26,39 @@ document.getElementById("student-form").addEventListener("submit", function (eve
     }
 
     if(!value) {
-        errorForm("Name is required", name);
-    } else if(!/^(?:[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+){0,2}(?:\s+[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+){0,2}){1,2})$/.test(value)) {
-        errorForm("Name is not correct", name);
+        errorForm("Поле ФИО не может быть пустым", name);
+    } else if(!/^[A-Za-zА-Яа-яЁё]{2,}(?:[-\s][A-Za-zА-Яа-яЁё]{2,})*$/.test(value)) {
+        errorForm("Поле ФИО не соответствует требуемой форме", name);
     }
 
 
 
     if(!group.value.trim()) {
-        errorForm("Group is required", group);
+        errorForm("Поле группа не может быть пустым", group);
     } else if(!/^[A-Z][1-4][1-9]\d{2}$/.test(group.value)) {
-        errorForm("Group is invalid", group);
+        errorForm("Поле группа не соответствует требуемой форме", group);
     }
 
     if(!ISU.value.trim()) {
-        errorForm("ISU is required", ISU);
+        errorForm("Поле ИСУ не может быть пустым", ISU);
     } else if(!/^[1-9]\d{5}$/.test(ISU.value)) {
-        errorForm("ISU is invalid", ISU);
+        errorForm("ИСУ не соответствует требуемой форме", ISU);
     }
 
     if(!dormNum.value.trim()) {
-        errorForm("Dormitory num is required", dormNum);
+        errorForm("Поле номер общежития не может быть пустым", dormNum);
     } else if(!/^[1-5]$/.test(dormNum.value)) {
-        errorForm("Dormitory is invalid", dormNum);
+        errorForm("Поле номер общежития не соответствует требуемой форме", dormNum);
     }
 
     if(!room.value.trim()) {
-        errorForm("Room num is required", room);
-    } else if(!/^(?:[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[ABC]$/.test(room.value)) {
-        errorForm("Room is invalid", room);
+        errorForm("Поле комната не может быть пустым", room);
+    } else if(!/^(?:[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])$/.test(room.value)) {
+        errorForm("Поле комната не соответсвует требуемой форме", room);
     }
 
     if(!date.value.trim()) {
-        errorForm("Date is required", date);
+        errorForm("Поле дата не может быть пустым", date);
     } else {
         let picked = new Date(dateValue);
         let today = new Date();
