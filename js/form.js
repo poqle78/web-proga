@@ -27,13 +27,11 @@ document.getElementById("student-form").addEventListener("submit", function (eve
 
     if (!value) {
         errorForm("Поле ФИО не может быть пустым", name);
-    } else if (!/^[A-Za-zА-Яа-яЁё]{2,}(?:[-\s][A-Za-zА-Яа-яЁё]{2,})*$/.test(value)) {
+    } else if(!/^(?:[A-ZА-ЯЁ][a-zа-яё]+|[a-zа-яё]+)(?:[-\s](?:[A-ZА-ЯЁ][a-zа-яё]+|[a-zа-яё]+)){1,}$/.test(value)) {
         errorForm("Поле ФИО не соответствует требуемой форме", name);
     }
 
-
-
-    if (!group.value.trim()) {
+    if(!group.value.trim()) {
         errorForm("Поле группа не может быть пустым", group);
     } else if (!/^[A-Z][1-9][1-4]\d{2}$/.test(group.value)) {
         errorForm("Поле группа не соответствует требуемой форме", group);
