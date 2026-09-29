@@ -43,13 +43,13 @@ if (errors.length > 0) {
 }
 
 function rowToStudent(cells) {
-  return { 
-    name: cells[0], 
-    group: cells[1], 
-    isu: cells[2], 
-    dorm: cells[3], 
-    room: cells[4], 
-    data: cells[5] 
+  return {
+    name: cells[0],
+    group: cells[1],
+    isu: cells[2],
+    dorm: cells[3],
+    room: cells[4],
+    date: cells[5]
   }
 }
 
@@ -81,7 +81,7 @@ function addToTable(student) {
   tr.appendChild(td);
 
   td = document.createElement('td');
-  td.textContent = student.data;
+  td.textContent = student.date;
   tr.appendChild(td);
 
   tbody.appendChild(tr);
@@ -106,10 +106,10 @@ async function updateTable() {
       rows[i].remove();
       continue;
     }
-    Object.entries(student).forEach(([key, value]) => {value.textContent = studentsMap[isu][key]});
+    Object.entries(student).forEach(([key, value]) => { value.textContent = studentsMap[isu][key] });
     delete studentsMap[isu];
   }
-  Object.entries(studentsMap).forEach(([key, value]) => {addToTable(value)});
+  Object.entries(studentsMap).forEach(([key, value]) => { addToTable(value) });
 }
 
 const intervalId = setInterval(updateTable, 1000);
