@@ -29,9 +29,9 @@ async function createStudent(student) {
     return requestToPromise(store.add(student));
 }
 
-async function deleteStudent(student) {
+async function deleteStudent(isu) {
     const store = await getStore("readwrite");
-    return requestToPromise(store.delete(student.isu));
+    return requestToPromise(store.delete(isu));
 }
 
 async function getStudent(isu) {
