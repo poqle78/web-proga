@@ -73,7 +73,7 @@ function validateDorm() {
 function validateRoom() {
     const value = room.valueAsNumber;
     if (!value) return "Поле комната не может быть пустым";
-    console.log(value)
+    
     if (!(value >= 1 && value <= 9999)) {
         return "Комната должна быть от 1 до 9999";
     }
@@ -148,7 +148,7 @@ studentForm.addEventListener("submit", async function (event) {
         group: group.value.trim(),
         isu: parseInt(isuInput.value.trim()),
         dorm: parseInt(dormNum.value.trim()),
-        room: room.value.trim(),
+        room: parseInt(dormNum.value.trim()),
         date: new Date(date.value),
         isUnru: document.getElementById("isNoRu").checked,
         note: notes.value.trim()
