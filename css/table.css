@@ -9,7 +9,12 @@ table {
   border: 2px solid rgb(200 200 200);
   letter-spacing: 1px;
   font-size: 0.8rem;
-  table-layout: fixed; 
+  table-layout: fixed;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
 td,
