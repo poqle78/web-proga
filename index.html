@@ -11,19 +11,21 @@
 
 <body>
     <h1>Студенты</h1>
-    <table id="studsTable">
-        <tbody>
-            <tr>
-                <td>ФИО</td>
-                <td>Группа</td>
-                <td>ИСУ ID</td>
-                <td>Общежитие</td>
-                <td>Комната</td>
-                <td>Срок заселения</td>
-                <td>Действия</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table-wrapper">
+        <table id="studsTable">
+            <tbody>
+                <tr>
+                    <td>ФИО</td>
+                    <td>Группа</td>
+                    <td>ИСУ ID</td>
+                    <td>Общежитие</td>
+                    <td>Комната</td>
+                    <td>Срок заселения</td>
+                    <td>Действия</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <button onclick="location.href = 'form.html';" id="myButton" class="float-left submit-button">Добавить
         студента</button>
     <script type="text/javascript" src="js/db.js"></script>
