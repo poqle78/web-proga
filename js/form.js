@@ -66,15 +66,16 @@ async function validateIsu() {
 function validateDorm() {
     const value = dormNum.valueAsNumber;
     if (!value) return "Поле номер общежития не может быть пустым";
-    if (!/^[1-5]$/.test(value)) return "Поле номер общежития не соответствует требуемой форме";
+    if (!(value >= 1 && value <= 99)) return "Поле номер общежития должен быть в диапазоне от 1 до 99";
     return null;
 }
 
 function validateRoom() {
     const value = room.valueAsNumber;
     if (!value) return "Поле комната не может быть пустым";
-    if (!/^(?:[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])$/.test(value)) {
-        return "Поле комната не соответствует требуемой форме";
+    console.log(value)
+    if (!(value >= 1 && value <= 9999)) {
+        return "Комната должна быть от 1 до 9999";
     }
     return null;
 }
@@ -85,8 +86,8 @@ function validateDate() {
     const picked = new Date(date.value);
     if (isNaN(picked.getTime())) return "Некорректная дата";
 
-    const todayDate = new Date();
-    todayDate.setHours(0, 0, 0, 0);
+    let todayDate = new Date();
+    todayDate++;
 
     const minDate = new Date();
     minDate.setFullYear(minDate.getFullYear() - 10);
