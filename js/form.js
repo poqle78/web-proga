@@ -1,11 +1,10 @@
-let student_name = document.getElementById("fullName");
-let group = document.getElementById("group");
-let ISU = document.getElementById("ISU");
-let dormNum = document.getElementById("dormNum");
-let room = document.getElementById("room");
-let date = document.getElementById("date");
-
-let notes = document.getElementById("notes");
+const student_name = document.getElementById("fullName");
+const group = document.getElementById("group");
+const ISU = document.getElementById("ISU");
+const dormNum = document.getElementById("dormNum");
+const room = document.getElementById("room");
+const date = document.getElementById("date");
+const notes = document.getElementById("notes");
 
 let isEdit = false;
 
