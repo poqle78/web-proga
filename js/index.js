@@ -45,8 +45,11 @@ function addToTable(student) {
   button_d.textContent = 'Удалить';
   button_d.className = 'btn-delete';
 
-  button_d.onclick = function() {
-      deleteStudent(student.isu);
+
+  button_d.onclick = async function() {
+      const ok = confirm("Вы уверены, что хотите удалить этого студента?")
+      if (!ok) return;
+      await deleteStudent(student.isu);
       tr.remove();
   };
 
