@@ -1,19 +1,26 @@
+const studentForm = document.getElementById("student-form");
+
 const student_name = document.getElementById("fullName");
 const group = document.getElementById("group");
-const ISU = document.getElementById("ISU");
+const isuInput = document.getElementById("ISU");
 const dormNum = document.getElementById("dormNum");
 const room = document.getElementById("room");
 const date = document.getElementById("date");
 const notes = document.getElementById("notes");
 
+const today = new Date().toISOString().split('T')[0];
+date.max = today;
+
 let isEdit = false;
+let startIsu = null;
 
 const url = new URL(document.URL);
 if (url.searchParams.get('isu')) {
     isEdit = true;
+    originalIsu = parseInt(url.searchParams.get('isu'));
     document.getElementById("submit-btn").textContent = 'Применить';
     (async () => {
-        student = await getStudent(parseInt(url.searchParams.get('isu')));
+        student = await getStudent(originalIsu);
         student_name.setAttribute('value', student.name);
         group.setAttribute('value', student.group);
         ISU.setAttribute('value', student.isu);
@@ -26,90 +33,137 @@ if (url.searchParams.get('isu')) {
     })();
 }
 
+function validateFullName() {
+    const fullName = student_name.value.trim();
+    const nameParts = fullName.split(/\s+/);
+    if (nameParts.length < 2) {
+        student_name.setCustomValidity("ФИО должно содержать минимум 2 отдельных слова");
+    } else if (nameParts.some(part => part.length < 2)) {
+
+        student_name.setCustomValidity("Длина каждого должна составлять не менее 2 символов");
+    } else {
+        student_name.setCustomValidity("");
+    }
+}
+
+function validateGroup() {
+    const value = group.value.trim();
+    if (!value) return "Поле группа не может быть пустым";
+    if (!/^[A-Z][1-9][1-4]\d{2}$/.test(value)) return "Поле группа не соответствует требуемой форме";
+    return null;
+}
+
+async function validateIsu() {
+    const isuId = isuInput.valueAsNumber;
+    if (!isuId) return "Поле ИСУ не может быть пустым";
+    if (!(isuId >= 100000 && isuId <= 999999)) return "ИСУ не соответствует требуемой форме";
+
+    if (isuId !== startIsu && !(await isIsuIdUnique(isuId))) {
+        return "Студент с таким ИСУ ID уже существует";
+    }
+    return null;
+}
+
+function validateDorm() {
+    const value = dormNum.valueAsNumber;
+    if (!value) return "Поле номер общежития не может быть пустым";
+    if (!/^[1-5]$/.test(value)) return "Поле номер общежития не соответствует требуемой форме";
+    return null;
+}
+
+function validateRoom() {
+    const value = room.valueAsNumber;
+    if (!value) return "Поле комната не может быть пустым";
+    if (!/^(?:[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])$/.test(value)) {
+        return "Поле комната не соответствует требуемой форме";
+    }
+    return null;
+}
+
+function validateDate() {
+    if (!date.value.trim()) return "Поле дата не может быть пустым";
+
+    const picked = new Date(date.value);
+    if (isNaN(picked.getTime())) return "Некорректная дата";
+
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+
+    const minDate = new Date();
+    minDate.setFullYear(minDate.getFullYear() - 10);
+    minDate.setHours(0, 0, 0, 0);
+
+    if (picked > todayDate) return "Дата не может быть в будущем";
+    if (picked < minDate) return "Дата не может быть раньше, чем 10 лет назад";
+    return null;
+}
+
+student_name.addEventListener("input", validateFullName);
 
 
-document.getElementById("student-form").addEventListener("submit", function (event) {
-    event.preventDefault();
+async function isIsuIdUnique(isuId) {
+    student = await getStudent(isuId);
+    return student === undefined;
+}
 
+function clearErrors() {
     document.querySelectorAll('.error-text').forEach(el => el.remove());
+}
+
+function showError(message, input) {
+    const errorEl = document.createElement("div");
+    errorEl.className = 'error-text';
+    errorEl.textContent = message;
+    errorEl.style.color = 'red';
+    errorEl.style.fontSize = '14px';
+    input.parentElement.appendChild(errorEl);
+}
+
+
+studentForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    clearErrors();
+
+    const checks = [
+        [student_name, validateFullName],
+        [group, validateGroup],
+        [isuInput, validateIsu],
+        [dormNum, validateDorm],
+        [room, validateRoom],
+        [date, validateDate],
+    ];
 
     let isValid = true;
-
-    let value = student_name.value.trim();
-    let dateValue = date.value;
-
-    const errorForm = (message, input) => {
-        let errorEl = document.createElement("div");
-        errorEl.className = 'error-text';
-        errorEl.textContent = message;
-        errorEl.style.color = 'red';
-        errorEl.style.fontSize = '14px';
-        input.parentElement.appendChild(errorEl);
-        isValid = false;
-    }
-
-    if (!value) {
-        errorForm("Поле ФИО не может быть пустым", student_name);
-    } else if (!/^(?:[A-ZА-ЯЁ][a-zа-яё]+|[a-zа-яё]+)(?:[-\s](?:[A-ZА-ЯЁ][a-zа-яё]+|[a-zа-яё]+)){1,}$/.test(value)) {
-        errorForm("Поле ФИО не соответствует требуемой форме", student_name);
-    }
-
-    if (!group.value.trim()) {
-        errorForm("Поле группа не может быть пустым", group);
-    } else if (!/^[A-Z][1-9][1-4]\d{2}$/.test(group.value)) {
-        errorForm("Поле группа не соответствует требуемой форме", group);
-    }
-
-    if (!ISU.value.trim()) {
-        errorForm("Поле ИСУ не может быть пустым", ISU);
-    } else if (!/^[1-9]\d{5}$/.test(ISU.value)) {
-        errorForm("ИСУ не соответствует требуемой форме", ISU);
-    }
-
-    if (!dormNum.value.trim()) {
-        errorForm("Поле номер общежития не может быть пустым", dormNum);
-    } else if (!/^[1-5]$/.test(dormNum.value)) {
-        errorForm("Поле номер общежития не соответствует требуемой форме", dormNum);
-    }
-
-    if (!room.value.trim()) {
-        errorForm("Поле комната не может быть пустым", room);
-    } else if (!/^(?:[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])$/.test(room.value)) {
-        errorForm("Поле комната не соответсвует требуемой форме", room);
-    }
-
-    if (!date.value.trim()) {
-        errorForm("Поле дата не может быть пустым", date);
-    } else {
-        let picked = new Date(dateValue);
-        let today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        let minDate = new Date();
-        minDate.setFullYear(minDate.getFullYear() - 6);
-        minDate.setHours(0, 0, 0, 0);
-
-        if (isNaN(picked.getTime())) {
-            errorForm("Некорректная дата", date);
-        } else if (picked > today) {
-            errorForm("Дата не может быть в будущем", date);
-        } else if (picked < minDate) {
-            errorForm("Дата не может быть раньше, чем 6 лет назад", date);
+    for (const [input, validator] of checks) {
+        const message = await validator();
+        if (message) {
+            showError(message, input);
+            isValid = false;
         }
     }
+    if (!isValid) return;
 
-    if (isValid) {
-        let isUnru = document.getElementById("isNoRu").checked;
-        if (!isEdit) {
-            createStudent({
-                name: value, group: group.value.trim(), isu: parseInt(ISU.value.trim()), dorm: parseInt(dormNum.value.trim()), room: room.value.trim(), date: new Date(dateValue), isUnru: isUnru, note: notes.value.trim()
-            });
+    const data = {
+        name: student_name.value.trim(),
+        group: group.value.trim(),
+        isu: parseInt(isuInput.value.trim()),
+        dorm: parseInt(dormNum.value.trim()),
+        room: room.value.trim(),
+        date: new Date(date.value),
+        isUnru: document.getElementById("isNoRu").checked,
+        note: notes.value.trim()
+    };
+
+    if (isEdit) {
+        if (originalIsu !== data.isu) {
+            await createStudent(data);
+            await deleteStudent(originalIsu);
         } else {
-            updateStudent({
-                name: value, group: group.value.trim(), isu: parseInt(ISU.value.trim()), dorm: parseInt(dormNum.value.trim()), room: room.value.trim(), date: new Date(dateValue), isUnru: isUnru, note: notes.value.trim()
-            });
+            await updateStudent(data);
         }
-
-        location.href = 'index.html'
+    } else {
+        await createStudent(data);
     }
+
+    location.href = 'index.html'
 })
