@@ -37,13 +37,13 @@ function validateFullName() {
     const fullName = student_name.value.trim();
     const nameParts = fullName.split(/\s+/);
     if (nameParts.length < 2) {
-        student_name.setCustomValidity("ФИО должно содержать минимум 2 отдельных слова");
+        return "ФИО должно содержать минимум 2 отдельных слова";
     } else if (nameParts.some(part => part.length < 2)) {
-
-        student_name.setCustomValidity("Длина каждого должна составлять не менее 2 символов");
-    } else {
-        student_name.setCustomValidity("");
+        return "Длина каждого должна составлять не менее 2 символов";
+    } else if (/\d/.test(fullName)) {
+        return "В имени не должно быть цифр";
     }
+    return null;
 }
 
 function validateGroup() {
