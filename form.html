@@ -12,43 +12,50 @@
     <form name="student" id="student-form">
         <div class="form-group">
             <label>ФИО
-                <input id="fullName" name="fullName" type="text" autocomplete="off" placeholder="Иванов Иван Иванович">
+                <input id="fullName" name="fullName" type="text" autocomplete="off" placeholder="Иванов Иван Иванович"
+                    required>
             </label>
         </div>
 
         <div class="form-group">
             <label>Группа
-                <input id="group" name="group" type="text" autocomplete="off" placeholder="P3220">
+                <input id="group" name="group" type="text" autocomplete="off" placeholder="P3220"
+                    pattern="[A-Z][1-9][1-4]\d{2}"
+                    title="Одна заглавная латинская буква, затем цифра 1–9, цифра 1–4 и ещё две любые цифры"
+                    required>
             </label>
         </div>
 
         <div class="form-group">
             <label>ИСУ
-                <input id="ISU" name="ISU" type="number" autocomplete="off" placeholder="501676">
+                <input id="ISU" name="ISU" type="number" autocomplete="off" placeholder="501676" 
+                min="100000"
+                max="999999"
+                required>
             </label>
         </div>
 
         <div class="form-group">
             <label>Номер общежития
-                <input id="dormNum" name="dormNum" type="number" autocomplete="off" placeholder="1">
+                <input id="dormNum" name="dormNum" type="number" autocomplete="off" placeholder="1" min="1" max="99" required>
             </label>
         </div>
 
         <div class="form-group">
             <label>Комната
-                <input id="room" name="room" type="number" autocomplete="off" placeholder="1108">
+                <input id="room" name="room" type="number" autocomplete="off" placeholder="1108" min="1" max="9999" required>
             </label>
         </div>
 
         <div class="form-group">
             <label>Дата заселения
-                <input id="date" name="date" type="date" autocomplete="off">
+                <input id="date" name="date" type="date" autocomplete="off" min="1990-01-01" required>
             </label>
         </div>
 
         <div class="form-group">
             <label>Иностранный гражданин
-                <input id="isNoRu" type="checkbox" name="isNoRu" value="1">
+                <input id="isNoRu" type="checkbox" name="isNoRu">
             </label>
         </div>
 
@@ -61,7 +68,7 @@
         <div class="form-actions">
             <button type="button" id="back-btn" onclick="location.href='index.html'">Назад</button>
             <button type="submit" id="submit-btn">Готово</button>
-            
+
         </div>
 
     </form>
