@@ -73,7 +73,7 @@ function validateDorm() {
 function validateRoom() {
     const value = room.valueAsNumber;
     if (!value) return "Поле комната не может быть пустым";
-    
+
     if (!(value >= 1 && value <= 9999)) {
         return "Комната должна быть от 1 до 9999";
     }
