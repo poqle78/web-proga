@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.routes import students
-from app.core.config import settings
+from app.api import students
 
 api_router = APIRouter()
 api_router.include_router(students.router)
