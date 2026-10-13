@@ -3,6 +3,7 @@ from app.models import Student
 
 
 async def collection_exist(name: str) -> None:
+    await engine.load()
     data = engine.get_data()
     if name not in data:
         data[name] = {}
