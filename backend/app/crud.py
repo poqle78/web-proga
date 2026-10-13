@@ -39,7 +39,7 @@ async def get_student(isu: int) -> Student | None:
     return Student(**student_dict)
 
 
-async def update_item(isu: int, new_student: Student | dict) -> Student | None:
+async def update_student(isu: int, new_student: Student | dict) -> Student | None:
     await engine.load()
     data = engine.get_data()
     current_student = data.get("students", {}).get(isu)
