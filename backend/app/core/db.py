@@ -50,4 +50,4 @@ class JsonEngine:
         return self._dirty
 
 
-engine = JsonEngine("backend/data.json")
+engine = JsonEngine("./data.json")

@@ -1,5 +1,18 @@
+import datetime
+
 from app.core.db import engine
-from app.models import Student
+from app.models import Student, StudentUpdate
+
+
+def dump_date(date):
+    if isinstance(date, datetime.date):
+        return date.strftime('%d-%m-%Y')
+    return date
+
+def load_date(date):
+    if isinstance(date, str):
+        return datetime.datetime.strptime(date, '%d-%m-%Y')
+    return date
 
 
 async def collection_exist(name: str) -> None:
@@ -15,16 +28,19 @@ async def create_student(student: Student) -> None:
         raise ValueError(f"pk key in Student not exist! item: {student} key: isu")
 
     await engine.load()
-    data = engine.get_data()
     await collection_exist("students")
+    
+    data = engine.get_data()
 
     if data["students"].get(str(student.isu)):
         raise KeyError(f"Key {student.isu} already exist!")
 
     student_dict = student.model_dump()
     pk = str(student_dict.pop("isu"))
+    student_dict['check_in'] = dump_date(student_dict['check_in'])
     data["students"][pk] = student_dict
-
+    print(student_dict)
+    print(data)
     engine.set_dirty(True)
     await engine.write(data)
 
@@ -36,17 +52,18 @@ async def get_student(isu: int) -> Student | None:
     if student_dict is None:
         return None
     student_dict["isu"] = isu
+    student_dict['check_in'] = load_date(student_dict['check_in'])
     return Student(**student_dict)
 
 
-async def update_student(isu: int, new_student: Student | dict) -> Student | None:
+async def update_student(isu: int, new_student: StudentUpdate | dict) -> Student | None:
     await engine.load()
     data = engine.get_data()
     current_student = data.get("students", {}).get(isu)
     if current_student is None:
         return None
 
-    if isinstance(new_student, Student):
+    if isinstance(new_student, StudentUpdate):
         new_student_dict = new_student.model_dump()
     else:
         new_student_dict = new_student
@@ -85,6 +102,7 @@ async def get_all_students() -> list[Student]:
     items = []
     for isu, item_data in collection.items():
         item_data["isu"] = int(isu)
+        item_data["check_in"] = load_date(item_data["check_in"])
         items.append(Student(**item_data))
 
     return items

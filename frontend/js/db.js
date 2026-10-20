@@ -25,8 +25,21 @@ async function getStore(mode) {
 
 
 async function createStudent(student) {
-    const store = await getStore("readwrite");
-    return requestToPromise(store.add(student));
+    try {
+        const response = await fetch('api/v1/students', {
+            method: "POST",
+            body: JSON.stringify(student),
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+        const json = await response.json();
+        console.log("Успех:", JSON.stringify(json));
+        return json
+    } catch (error) {
+        console.error("Ошибка:", error);
+        return {}
+    }
 }
 
 async function deleteStudent(isu) {
@@ -35,8 +48,7 @@ async function deleteStudent(isu) {
 }
 
 async function getStudent(isu) {
-    const store = await getStore("readonly");
-    return requestToPromise(store.get(isu));
+    return
 }
 
 async function updateStudent(student) {
@@ -45,6 +57,13 @@ async function updateStudent(student) {
 }
 
 async function getAllStudent() {
-    const store = await getStore("readonly");
-    return requestToPromise(store.getAll());
+    try {
+        const response = await fetch('api/v1/students/')
+        const json = await response.json();
+        console.log("Успех:", JSON.stringify(json));
+        return json
+    } catch (error) {
+        console.error("Ошибка:", error);
+        return []
+    }
 }

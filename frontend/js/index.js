@@ -29,7 +29,7 @@ function addToTable(student) {
   tr.appendChild(td);
 
   td = document.createElement('td');
-  td.textContent = student.dorm;
+  td.textContent = student.dormitory;
   tr.appendChild(td);
 
   td = document.createElement('td');
@@ -83,8 +83,13 @@ async function updateTable() {
   const studentFromDB = await getAllStudent();
   const studentsMap = {};
   studentFromDB.forEach(element => {
-    element.date = element.date.toLocaleDateString('ru-RU');
-    studentsMap[element.isu] = element
+    const raw = element.check_in;
+    let dateStr = '';
+    if (raw) {
+      const [y, m, d] = raw.split('-').map(Number);
+      dateStr = new Date(y, m - 1, d).toLocaleDateString('ru-RU');
+    }
+    studentsMap[element.isu] = {...element, date: dateStr}
   });
   const tbody = document.getElementById('studsTable').getElementsByTagName('tbody')[0];
 
@@ -104,4 +109,4 @@ async function updateTable() {
   Object.entries(studentsMap).forEach(([_, value]) => { addToTable(value) });
 }
 updateTable();
-const intervalId = setInterval(updateTable, 1000);
+// const intervalId = setInterval(updateTable, 1000);
