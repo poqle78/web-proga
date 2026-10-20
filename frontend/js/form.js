@@ -12,7 +12,8 @@ const today = new Date().toISOString().split('T')[0];
 date.max = today;
 
 let isEdit = false;
-let startIsu = null;
+let originalStudent = null;
+let originalIsu = null;
 
 const url = new URL(document.URL);
 if (url.searchParams.get('isu')) {
@@ -20,15 +21,22 @@ if (url.searchParams.get('isu')) {
     originalIsu = parseInt(url.searchParams.get('isu'));
     document.getElementById("submit-btn").textContent = 'Применить';
     (async () => {
-        student = await getStudent(originalIsu);
-        student_name.setAttribute('value', student.name);
-        group.setAttribute('value', student.group);
-        ISU.setAttribute('value', student.isu);
-        dormNum.setAttribute('value', student.dorm);
-        room.setAttribute('value', student.room);
-        date.value = student.date.toISOString().split('T')[0];
-        notes.setAttribute('value', student.note);
-        document.getElementById("isNoRu").checked = student.isUnru;
+        originalStudent = await getStudent(originalIsu);
+
+        student_name.setAttribute('value', originalStudent.name);
+        group.setAttribute('value', originalStudent.group);
+        ISU.setAttribute('value', originalStudent.isu);
+        dormNum.setAttribute('value', originalStudent.dormitory);
+        room.setAttribute('value', originalStudent.room);
+        const raw = originalStudent.check_in;
+        let check_in;
+        if (raw) {
+            const [y, m, d] = raw.split('-');
+            check_in = `${y}-${m}-${d}`
+        }
+        date.value = check_in;
+        notes.setAttribute('value', originalStudent.notes ?? "");
+        document.getElementById("isNoRu").checked = originalStudent.is_foreign;
 
     })();
 }
@@ -102,8 +110,8 @@ student_name.addEventListener("input", validateFullName);
 
 
 async function isIsuIdUnique(isuId) {
-    student = await getStudent(isuId);
-    return student === undefined;
+    const student = await getStudent(isuId);
+    return !student || !student.isu;   // 404 → null/[] → уникален
 }
 
 function clearErrors() {
@@ -117,6 +125,20 @@ function showError(message, input) {
     errorEl.style.color = 'red';
     errorEl.style.fontSize = '14px';
     input.parentElement.appendChild(errorEl);
+}
+
+function diffStudent(original, next) {
+    const changes = {};
+    for (const key of Object.keys(next)) {
+        const a = original?.[key];
+        const b = next[key];
+        if (key === "check_in") {
+            if (String(a).split("T")[0] !== String(b).split("T")[0]) changes[key] = b;
+        } else if (a !== b) {
+            changes[key] = b;
+        }
+    }
+    return changes;
 }
 
 
@@ -149,9 +171,9 @@ studentForm.addEventListener("submit", async function (event) {
         isu: parseInt(isuInput.value.trim()),
         dormitory: parseInt(dormNum.value.trim()),
         room: parseInt(dormNum.value.trim()),
-        check_in: new Date(date.value),
+        check_in: date.value,
         is_foreign: document.getElementById("isNoRu").checked,
-        note: notes.value.trim()
+        notes: notes.value.trim()
     };
 
     if (isEdit) {
@@ -159,7 +181,17 @@ studentForm.addEventListener("submit", async function (event) {
             await createStudent(data);
             await deleteStudent(originalIsu);
         } else {
-            await updateStudent(data);
+            const changes = diffStudent(originalStudent, data);
+            const count = Object.keys(changes).length;
+            console.log(count);
+            console.log(changes);
+            if (count === 0) {
+                
+            } else if (count <= 3) {
+                await patchStudent(data.isu, changes);
+            } else {
+                await putStudent(data);
+            }
         }
     } else {
         await createStudent(data);

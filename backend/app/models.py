@@ -19,7 +19,7 @@ class Student(BaseModel):
     is_foreign: StrictBool = Field(
         default=False, description="Является ли студент иностранцем"
     )
-    notes: Optional[str] = Field(default=None, description="Заметки")
+    notes: str = Field(default="", description="Заметки")
 
     @field_validator("name")
     @classmethod

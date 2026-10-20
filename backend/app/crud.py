@@ -59,22 +59,25 @@ async def get_student(isu: int) -> Student | None:
 async def update_student(isu: int, new_student: StudentUpdate | dict) -> Student | None:
     await engine.load()
     data = engine.get_data()
-    current_student = data.get("students", {}).get(isu)
+    current_student = data.get("students", {}).get(str(isu))
     if current_student is None:
         return None
+    current_student['check_in'] = load_date(current_student['check_in'])
 
     if isinstance(new_student, StudentUpdate):
-        new_student_dict = new_student.model_dump()
+        new_student_dict = new_student.model_dump(exclude_unset=True)
     else:
         new_student_dict = new_student
 
     merged = {**current_student, **new_student_dict}
+    merged['isu'] = isu
 
     student = Student(**merged)
     student_dict = student.model_dump()
     new_isu = student_dict.pop("isu")
     if new_isu != isu:
         await delete_student(isu)
+    student_dict['check_in'] = dump_date(student_dict['check_in'])
     data["students"][str(new_isu)] = student_dict
     engine.set_dirty(True)
     await engine.write(data)
