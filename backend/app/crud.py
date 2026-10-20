@@ -115,3 +115,70 @@ async def student_exists(isu: int) -> bool:
     await engine.load()
     data = engine.get_data()
     return str(isu) in data.get("students", {})
+
+async def check_student(group: str, name: str, isu: int, dormitory: int, room: int, check_in: date, notes: str, is_foreigner: bool, students: list) -> list:
+    list_students = []
+
+    for student in students:
+        flag = False
+
+        if group:
+            if student.group == group:
+                flag = True
+            else:
+                flag = False
+                continue
+
+        if name:
+            if name.lower() in student.name.lower():
+                flag = True
+            else:
+                flag = False
+                continue
+
+        if isu:
+            if student.isu == isu:
+                flag = True
+            else:
+                flag = False
+                continue
+
+        if dormitory:
+            if student.dormitory == dormitory:
+                flag = True
+            else:
+                flag = False
+                continue
+
+        if room:
+            if student.room == room:
+                flag = True
+            else:
+                flag = False
+                continue
+
+        if check_in:
+            if check_in == student.check_in:
+                flag = True
+            else:
+                flag = False
+                continue
+
+        if is_foreigner is not None:
+            if is_foreigner == student.is_foreigner:
+                flag = True
+            else:
+                flag = False
+                continue
+
+        if notes:
+            if student.notes and notes.lower() in student.notes.lower():
+                flag = True
+            else:
+                flag = False
+                continue
+
+        if flag:
+            list_students.append(student)
+
+    return list_students
