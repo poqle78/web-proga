@@ -1,3 +1,102 @@
+const filterRoomInput = document.getElementById("filterRoom");
+const filterIsuIdInput = document.getElementById("filterIsuId");
+const filterGroupInput = document.getElementById("filterGroup");
+const filterDormitoryInput = document.getElementById("filterDormitory");
+const filterIsForeignSelect = document.getElementById("filterIsForeign");
+const filterFullNameInput = document.getElementById("filterFullName");
+const filterMoveInDateInput = document.getElementById("filterMoveInDate");
+const filterNotesInput = document.getElementById("filterNotes");
+const applyFiltersButton = document.getElementById("applyFilters");
+const resetFiltersButton = document.getElementById("resetFilters");
+
+
+function readFilters() {
+  const filters = {};
+
+  const name = filterFullNameInput.value.trim();
+  const group = filterGroupInput.value.trim();
+  const dormitory = filterDormitoryInput.value.trim();
+  const roomNumber = filterRoomInput.value.trim();
+  const isu = filterIsuIdInput.value.trim();
+  const check_in = filterMoveInDateInput.value;
+  const is_foregin = filterIsForeignSelect.value;
+  const notes = filterNotesInput.value.trim();
+
+  if (name) {
+    filters.name = name;
+  }
+  if (group) {
+    filters.group = group;
+  }
+  if (dormitory) {
+    filters.dormitory = Number(dormitory);
+  }
+  if (roomNumber) {
+    filters.roomNumber = Number(roomNumber);
+  }
+  if (isu) {
+    filters.isu = Number(isu);
+  }
+  if (check_in) {
+    filters.check_in = check_in;
+  }
+  if (is_foregin !== "") {
+    filters.is_foregin = is_foregin === "true";
+  }
+  if (notes) {
+    filters.notes = notes;
+  }
+
+  return filters;
+}
+
+function buildQueryString(filters) {
+  const params = new URLSearchParams();
+
+  if (filters.name) {
+    params.set("name", filters.name);
+  }
+  if (filters.group) {
+    params.set("group", filters.group);
+  }
+  if (filters.dormitory) {
+    params.set("dormitory", filters.dormitory);
+  }
+  if (filters.room) {
+    params.set("room", filters.room);
+  }
+  if (filters.isu) {
+    params.set("isu", filters.isu);
+  }
+  if (filters.check_in) {
+    params.set("check_in", filters.check_in);
+  }
+  if (filters.is_foregin !== undefined) {
+    params.set("is_foregin", filters.is_foregin);
+  }
+  if (filters.notes) {
+    params.set("notes", filters.notes);
+  }
+
+  return params.toString();
+}
+
+async function loadStudents(filters = {}) {
+  try {
+    const students = await getAllStudents(filters);
+    renderStudents(students);
+  } catch (error) {
+    console.error("Ошибка загрузки студентов:", error);
+  }
+}
+
+
+function applyFilters() {
+  const filters = readFilters();
+  loadStudents(filters);
+}
+
+
 function rowToStudent(cells) {
   return {
     name: cells[0],
@@ -46,27 +145,27 @@ function addToTable(student) {
   button_d.className = 'btn-delete';
 
 
-  button_d.onclick = async function() {
-      const ok = confirm("Вы уверены, что хотите удалить этого студента?")
-      if (!ok) return;
-      await deleteStudent(student.isu);
-      tr.remove();
+  button_d.onclick = async function () {
+    const ok = confirm("Вы уверены, что хотите удалить этого студента?")
+    if (!ok) return;
+    await deleteStudent(student.isu);
+    tr.remove();
   };
 
   let button_edit = document.createElement('button');
   button_edit.textContent = 'Изменить';
   button_edit.className = 'btn-edit';
 
-  button_edit.onclick = function() {
-      location.href = 'form.html?isu=' + student.isu;
+  button_edit.onclick = function () {
+    location.href = 'form.html?isu=' + student.isu;
   };
 
   let button_details = document.createElement('button');
   button_details.textContent = 'Подробнее';
   button_details.className = 'btn-details';
 
-  button_details.onclick = function() {
-      location.href = 'details.html?isu=' + student.isu;
+  button_details.onclick = function () {
+    location.href = 'details.html?isu=' + student.isu;
   };
 
   td.appendChild(button_details);
@@ -89,7 +188,7 @@ async function updateTable() {
       const [y, m, d] = raw.split('-').map(Number);
       dateStr = new Date(y, m - 1, d).toLocaleDateString('ru-RU');
     }
-    studentsMap[element.isu] = {...element, date: dateStr}
+    studentsMap[element.isu] = { ...element, date: dateStr }
   });
   const tbody = document.getElementById('studsTable').getElementsByTagName('tbody')[0];
 
@@ -110,3 +209,10 @@ async function updateTable() {
 }
 updateTable();
 // const intervalId = setInterval(updateTable, 1000);
+
+
+student_filters = document.getElementById("filters");
+submit_filter = document.getElementById("applyFilters");
+student_filters.addEventListener("click", async function (event) {
+
+});
