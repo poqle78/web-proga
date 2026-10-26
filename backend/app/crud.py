@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 
 from app.core.db import engine
 from app.models import Student, StudentUpdate
@@ -6,12 +7,13 @@ from app.models import Student, StudentUpdate
 
 def dump_date(date):
     if isinstance(date, datetime.date):
-        return date.strftime('%d-%m-%Y')
+        return date.strftime("%d-%m-%Y")
     return date
+
 
 def load_date(date):
     if isinstance(date, str):
-        return datetime.datetime.strptime(date, '%d-%m-%Y')
+        return datetime.datetime.strptime(date, "%d-%m-%Y")
     return date
 
 
@@ -29,7 +31,7 @@ async def create_student(student: Student) -> None:
 
     await engine.load()
     await collection_exist("students")
-    
+
     data = engine.get_data()
 
     if data["students"].get(str(student.isu)):
@@ -37,7 +39,7 @@ async def create_student(student: Student) -> None:
 
     student_dict = student.model_dump()
     pk = str(student_dict.pop("isu"))
-    student_dict['check_in'] = dump_date(student_dict['check_in'])
+    student_dict["check_in"] = dump_date(student_dict["check_in"])
     data["students"][pk] = student_dict
     print(student_dict)
     print(data)
@@ -52,7 +54,7 @@ async def get_student(isu: int) -> Student | None:
     if student_dict is None:
         return None
     student_dict["isu"] = isu
-    student_dict['check_in'] = load_date(student_dict['check_in'])
+    student_dict["check_in"] = load_date(student_dict["check_in"])
     return Student(**student_dict)
 
 
@@ -62,7 +64,7 @@ async def update_student(isu: int, new_student: StudentUpdate | dict) -> Student
     current_student = data.get("students", {}).get(str(isu))
     if current_student is None:
         return None
-    current_student['check_in'] = load_date(current_student['check_in'])
+    current_student["check_in"] = load_date(current_student["check_in"])
 
     if isinstance(new_student, StudentUpdate):
         new_student_dict = new_student.model_dump(exclude_unset=True)
@@ -70,14 +72,14 @@ async def update_student(isu: int, new_student: StudentUpdate | dict) -> Student
         new_student_dict = new_student
 
     merged = {**current_student, **new_student_dict}
-    merged['isu'] = isu
+    merged["isu"] = isu
 
     student = Student(**merged)
     student_dict = student.model_dump()
     new_isu = student_dict.pop("isu")
     if new_isu != isu:
         await delete_student(isu)
-    student_dict['check_in'] = dump_date(student_dict['check_in'])
+    student_dict["check_in"] = dump_date(student_dict["check_in"])
     data["students"][str(new_isu)] = student_dict
     engine.set_dirty(True)
     await engine.write(data)
@@ -116,7 +118,18 @@ async def student_exists(isu: int) -> bool:
     data = engine.get_data()
     return str(isu) in data.get("students", {})
 
-async def check_student(group: str, name: str, isu: int, dormitory: int, room: int, check_in: date, notes: str, is_foreigner: bool, students: list) -> list:
+
+async def check_student(
+    students: list,
+    group: Optional[str],
+    name: Optional[str],
+    isu: Optional[int],
+    dormitory: Optional[int],
+    room: Optional[int],
+    check_in: Optional[datetime.date],
+    is_foreigner: Optional[bool],
+    notes: Optional[str],
+) -> list:
     list_students = []
 
     for student in students:
