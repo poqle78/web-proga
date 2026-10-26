@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from typing import Optional
+from datetime import date
 
 from app.models import Student, StudentUpdate
 from app.crud import *
@@ -28,20 +29,35 @@ async def read_root(
 
 @router.get("/{isu}")
 async def read_student(isu: int):
-    return await get_student(isu)
+    try:
+        return await get_student(isu)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Студента с таким ИСУ нет!")
 
-@router.post("")
+@router.post("", status_code=201)
 async def post_student(student: Student):
-    return await create_student(student)
+    try:
+        return await create_student(student)
+    except Exception:
+        raise HTTPException(status_code=409, detail="Студент с таким ИСУ уже есть!")
 
 @router.put("/{isu}")
 async def upd_student(isu: int, student: StudentUpdate):
-    return await update_student(isu, student)
+    try:
+        return await update_student(isu, student)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Студента с таким ИСУ нет!")
 
 @router.patch("/{isu}")
 async def patch_student(isu: int, student: StudentUpdate):
-    return await update_student(isu, student)
+    try:
+        return await update_student(isu, student)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Студента с таким ИСУ нет!")
 
-@router.delete("/{isu}")
+@router.delete("/{isu}", status_code=204)
 async def del_student(isu: int):
-    return await delete_student(isu)
+    try:
+        await delete_student(isu)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Студента с таким ИСУ нет!")
