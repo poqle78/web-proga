@@ -50,52 +50,34 @@ function readFilters() {
   return filters;
 }
 
-function buildQueryString(filters) {
-  const params = new URLSearchParams();
-
-  if (filters.name) {
-    params.set("name", filters.name);
-  }
-  if (filters.group) {
-    params.set("group", filters.group);
-  }
-  if (filters.dormitory) {
-    params.set("dormitory", filters.dormitory);
-  }
-  if (filters.room) {
-    params.set("room", filters.room);
-  }
-  if (filters.isu) {
-    params.set("isu", filters.isu);
-  }
-  if (filters.check_in) {
-    params.set("check_in", filters.check_in);
-  }
-  if (filters.is_foregin !== undefined) {
-    params.set("is_foregin", filters.is_foregin);
-  }
-  if (filters.notes) {
-    params.set("notes", filters.notes);
-  }
-
-  return params.toString();
-}
 
 async function loadStudents(filters = {}) {
   try {
-    const students = await getAllStudents(filters);
-    renderStudents(students);
+    const students = getAllStudent(filters);
+    updateTable(students);
   } catch (error) {
     console.error("Ошибка загрузки студентов:", error);
   }
 }
 
 
-function applyFilters() {
+async function applyFilters() {
   const filters = readFilters();
-  loadStudents(filters);
+  await loadStudents(filters);
 }
 
+function resetFilters() {
+    filterFullNameInput.value = "";
+    filterGroupInput.value = "";
+    filterDormitoryInput.value = "";
+    filterMoveInDateInput.value = "";
+    filterIsForeignSelect.value = "";
+    filterNotesInput.value = "";
+    filterRoomInput.value = "";
+    filterIsuIdInput.value = "";
+
+    loadStudents();
+}
 
 function rowToStudent(cells) {
   return {
@@ -178,8 +160,14 @@ function addToTable(student) {
 }
 
 
-async function updateTable() {
-  const studentFromDB = await getAllStudent();
+async function updateTable(get_students_func) {
+  let studentFromDB = []
+  try {
+    studentFromDB = await get_students_func;
+  } catch (error) {
+    console.error("Ошибка загрузки студентов:", error);
+  }
+
   const studentsMap = {};
   studentFromDB.forEach(element => {
     const raw = element.check_in;
@@ -207,12 +195,8 @@ async function updateTable() {
   }
   Object.entries(studentsMap).forEach(([_, value]) => { addToTable(value) });
 }
-updateTable();
+updateTable(getAllStudent({}));
 // const intervalId = setInterval(updateTable, 1000);
 
-
-student_filters = document.getElementById("filters");
-submit_filter = document.getElementById("applyFilters");
-student_filters.addEventListener("click", async function (event) {
-
-});
+applyFiltersButton.addEventListener("click", applyFilters);
+resetFiltersButton.addEventListener("click", resetFilters);

@@ -1,3 +1,35 @@
+function buildQueryString(filters) {
+  const params = new URLSearchParams();
+
+  if (filters.name) {
+    params.set("name", filters.name);
+  }
+  if (filters.group) {
+    params.set("group", filters.group);
+  }
+  if (filters.dormitory) {
+    params.set("dormitory", filters.dormitory);
+  }
+  if (filters.room) {
+    params.set("room", filters.room);
+  }
+  if (filters.isu) {
+    params.set("isu", filters.isu);
+  }
+  if (filters.check_in) {
+    params.set("check_in", filters.check_in);
+  }
+  if (filters.is_foregin !== undefined) {
+    params.set("is_foregin", filters.is_foregin);
+  }
+  if (filters.notes) {
+    params.set("notes", filters.notes);
+  }
+
+  return params.toString();
+}
+
+
 async function requestJSON(url, options = {}) {
     const response = await fetch(url, {
         headers: { "Content-Type": "application/json" },
@@ -66,9 +98,9 @@ async function patchStudent(isu, changes) {
     }
 }
 
-async function getAllStudent() {
+async function getAllStudent(filters = {}) {
     try {
-        const json = await requestJSON('api/v1/students/')
+        const json = await requestJSON('api/v1/students/?' + buildQueryString(filters))
         return json
     } catch (error) {
         return []
