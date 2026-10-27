@@ -65,7 +65,7 @@ async function validateIsu() {
     const isuId = isuInput.valueAsNumber;
     if (!isuId) return "Поле ИСУ не может быть пустым";
     if (!(isuId >= 100000 && isuId <= 999999)) return "ИСУ не соответствует требуемой форме";
-    if (!isEdit && !(await isIsuIdUnique(isuId))) {
+    if (!(await isIsuIdUnique(isuId) && (isEdit || originalIsu !== isuId))) {
         return "Студент с таким ИСУ ID уже существует";
     }
     return null;
@@ -184,13 +184,15 @@ studentForm.addEventListener("submit", async function (event) {
 
     if (isEdit) {
         if (originalIsu !== data.isu) {
-            await createStudent(data);
-            await deleteStudent(originalIsu);
+            if (validateIsu) {
+                await createStudent(data);
+                await deleteStudent(originalIsu);
+            } else {
+
+            }
         } else {
             const changes = diffStudent(originalStudent, data);
             const count = Object.keys(changes).length;
-            console.log(count);
-            console.log(changes);
             if (count === 0) {
                 
             } else if (count <= 3) {

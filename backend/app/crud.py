@@ -14,7 +14,7 @@ def dump_date(date):
 
 def load_date(date):
     if isinstance(date, str):
-        return datetime.datetime.strptime(date, "%d-%m-%Y")
+        return datetime.datetime.strptime(date, "%d-%m-%Y").date()
     return date
 
 
@@ -52,6 +52,7 @@ async def get_student(isu: int) -> Student | None:
     student_dict = data.get("students", {}).get(str(isu))
     if student_dict is None:
         return None
+    student_dict = dict(student_dict)
     student_dict["isu"] = isu
     student_dict["check_in"] = load_date(student_dict["check_in"])
     return Student(**student_dict)
@@ -63,6 +64,7 @@ async def update_student(isu: int, new_student: StudentUpdate | dict) -> Student
     current_student = data.get("students", {}).get(str(isu))
     if current_student is None:
         return None
+    current_student = dict(current_student)
     current_student["check_in"] = load_date(current_student["check_in"])
 
     if isinstance(new_student, StudentUpdate):
@@ -79,11 +81,15 @@ async def update_student(isu: int, new_student: StudentUpdate | dict) -> Student
 
     student = Student(**merged)
     student_dict = student.model_dump()
+    student_dict["check_in"] = dump_date(student_dict["check_in"])
+
     new_isu = student_dict.pop("isu")
+    if new_isu != isu and await student_exists(new_isu):
+        raise KeyError("Isu already exist!")
+
+    data["students"][str(new_isu)] = student_dict
     if new_isu != isu:
         del data["students"][str(isu)]
-    student_dict["check_in"] = dump_date(student_dict["check_in"])
-    data["students"][str(new_isu)] = student_dict
     engine.set_dirty(True)
     await engine.write(data)
 
