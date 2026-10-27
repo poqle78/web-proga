@@ -84,7 +84,7 @@ function rowToStudent(cells) {
     name: cells[0],
     group: cells[1],
     isu: cells[2],
-    dorm: cells[3],
+    dormitory: cells[3],
     room: cells[4],
     date: cells[5]
   }
