@@ -110,8 +110,14 @@ student_name.addEventListener("input", validateFullName);
 
 
 async function isIsuIdUnique(isuId) {
-    const student = await getStudent(isuId);
-    return !student || !student.isu;   // 404 → null/[] → уникален
+    try {
+        const student = await getStudent(isuId);
+    } catch (error) {
+        if (error.status === 404) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function clearErrors() {
