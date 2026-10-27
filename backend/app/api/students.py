@@ -1,5 +1,3 @@
-from typing import Optional
-from datetime import date
 from fastapi import APIRouter, HTTPException
 
 from app.models import Student, StudentUpdate, StudentFilter
@@ -9,20 +7,9 @@ router = APIRouter(tags=["students"], prefix="/students")
 
 
 @router.get("")
-async def read_root(
-    group: Optional[str] = None,
-    name: Optional[str] = None,
-    isu: Optional[int] = None,
-    dormitory: Optional[int] = None,
-    room: Optional[int] = None,
-    check_in: Optional[date] = None,
-    is_foreigner: Optional[bool] = None,
-    notes: Optional[str] = None,
-):
+async def read_root():
     students = await get_all_students()
-    return await check_student(
-        students, group, name, isu, dormitory, room, check_in, is_foreigner, notes
-    )
+    return students
 
 
 @router.api_route("", methods=["QUERY"])
@@ -30,14 +17,7 @@ async def query_students(filters: StudentFilter):
     students = await get_all_students()
     return await check_student(
         students,
-        filters.group,
-        filters.name,
-        filters.isu,
-        filters.dormitory,
-        filters.room,
-        filters.check_in,
-        filters.is_foreigner,
-        filters.notes,
+        filters
     )
 
 

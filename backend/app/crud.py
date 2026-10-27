@@ -3,7 +3,7 @@ from typing import Optional
 
 
 from app.core.db import engine
-from app.models import Student, StudentUpdate
+from app.models import Student, StudentFilter, StudentUpdate
 
 
 def dump_date(date):
@@ -132,24 +132,16 @@ async def student_exists(isu: int) -> bool:
 
 async def check_student(
     students: list,
-    group: Optional[str],
-    name: Optional[str],
-    isu: Optional[int],
-    dormitory: Optional[int],
-    room: Optional[int],
-    check_in: Optional[datetime.date],
-    is_foreigner: Optional[bool],
-    notes: Optional[str],
-    ) -> list:
+    filters: StudentFilter) -> list:
     if (
-        group is None
-        and name is None
-        and isu is None
-        and dormitory is None
-        and room is None
-        and check_in is None
-        and is_foreigner is None
-        and notes is None
+        filters.group is None
+        and filters.name is None
+        and filters.isu is None
+        and filters.dormitory is None
+        and filters.room is None
+        and filters.check_in is None
+        and filters.is_foreigner is None
+        and filters.notes is None
     ):
         return students
 

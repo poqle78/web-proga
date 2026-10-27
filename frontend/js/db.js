@@ -1,32 +1,32 @@
 function buildQueryString(filters) {
-  const params = new URLSearchParams();
+    const params = new URLSearchParams();
 
-  if (filters.name) {
-    params.set("name", filters.name);
-  }
-  if (filters.group) {
-    params.set("group", filters.group);
-  }
-  if (filters.dormitory) {
-    params.set("dormitory", filters.dormitory);
-  }
-  if (filters.room) {
-    params.set("room", filters.room);
-  }
-  if (filters.isu) {
-    params.set("isu", filters.isu);
-  }
-  if (filters.check_in) {
-    params.set("check_in", filters.check_in);
-  }
-  if (filters.is_foregin !== undefined) {
-    params.set("is_foregin", filters.is_foregin);
-  }
-  if (filters.notes) {
-    params.set("notes", filters.notes);
-  }
+    if (filters.name) {
+        params.set("name", filters.name);
+    }
+    if (filters.group) {
+        params.set("group", filters.group);
+    }
+    if (filters.dormitory) {
+        params.set("dormitory", filters.dormitory);
+    }
+    if (filters.room) {
+        params.set("room", filters.room);
+    }
+    if (filters.isu) {
+        params.set("isu", filters.isu);
+    }
+    if (filters.check_in) {
+        params.set("check_in", filters.check_in);
+    }
+    if (filters.is_foregin !== undefined) {
+        params.set("is_foregin", filters.is_foregin);
+    }
+    if (filters.notes) {
+        params.set("notes", filters.notes);
+    }
 
-  return params.toString();
+    return params.toString();
 }
 
 
@@ -99,10 +99,23 @@ async function patchStudent(isu, changes) {
 }
 
 async function getAllStudent(filters = {}) {
+    const hasFilters = Object.keys(filters).length > 0;
+
+    const options = hasFilters
+        ? {
+            method: "QUERY",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(filters)
+        }
+        : {};
     try {
-        const json = await requestJSON('api/v1/students/?' + buildQueryString(filters))
+
+        const json = await requestJSON('api/v1/students/', options);
         return json
     } catch (error) {
+        console.log("Ошибка загрузки студентов: " + error.status)
         return []
     }
 }

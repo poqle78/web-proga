@@ -32,7 +32,7 @@ function readFilters() {
     filters.dormitory = Number(dormitory);
   }
   if (roomNumber) {
-    filters.roomNumber = Number(roomNumber);
+    filters.room = Number(roomNumber);
   }
   if (isu) {
     filters.isu = Number(isu);
