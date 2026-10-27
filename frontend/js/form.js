@@ -65,9 +65,16 @@ async function validateIsu() {
     const isuId = isuInput.valueAsNumber;
     if (!isuId) return "Поле ИСУ не может быть пустым";
     if (!(isuId >= 100000 && isuId <= 999999)) return "ИСУ не соответствует требуемой форме";
-    if (!(await isIsuIdUnique(isuId) && (isEdit || originalIsu !== isuId))) {
-        return "Студент с таким ИСУ ID уже существует";
+    if (isEdit) {
+        if (!await isIsuIdUnique(isuId) && originalIsu !== isuId) {
+            return "Студент с таким ИСУ ID уже существует";
+        }
+    } else {
+        if (!(await isIsuIdUnique(isuId))) {
+            return "Студент с таким ИСУ ID уже существует";
+        }
     }
+    
     return null;
 }
 
