@@ -149,4 +149,4 @@ def student_filter(student: Student, filters: StudentFilter) -> bool:
 
 
 async def check_student(students: list, filters: StudentFilter) -> list:
-    return list(filter(lambda x: student_filter(x, filters), students))
+    return [s for s in students if student_filter(s, filters)]
