@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException
 from typing import Optional
 from datetime import date
+from fastapi import APIRouter, HTTPException
 
 from app.models import Student, StudentUpdate, StudentFilter
 from app.crud import *
@@ -72,6 +72,7 @@ async def patch_student(isu: int, student: StudentUpdate):
     if new_student is None:
         raise HTTPException(status_code=404, detail="Студента с таким ИСУ нет!")
     return new_student
+
 
 
 @router.delete("/{isu}", status_code=204)
