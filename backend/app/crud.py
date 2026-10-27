@@ -117,9 +117,10 @@ async def get_all_students() -> list[Student]:
     collection = data.get("students", {})
     items = []
     for isu, item_data in collection.items():
-        item_data["isu"] = int(isu)
-        item_data["check_in"] = load_date(item_data["check_in"])
-        items.append(Student(**item_data))
+        student = dict(item_data)
+        student["isu"] = int(isu)
+        student["check_in"] = load_date(item_data["check_in"])
+        items.append(Student(**student))
 
     return items
 
@@ -130,83 +131,22 @@ async def student_exists(isu: int) -> bool:
     return str(isu) in data.get("students", {})
 
 
-async def check_student(
-    students: list,
-    filters: StudentFilter) -> list:
-    if (
-        filters.group is None
-        and filters.name is None
-        and filters.isu is None
-        and filters.dormitory is None
-        and filters.room is None
-        and filters.check_in is None
-        and filters.is_foreigner is None
-        and filters.notes is None
-    ):
-        return students
+IS_STRING_PARAMS = ["name", "notes"]
 
-    list_students = []
+def student_filter(student: Student, filters: StudentFilter) -> bool:
+    student_dict = student.model_dump()
+    for key, value in filters.model_dump().items():
+        if value is None:
+            continue
 
-    for student in students:
-        flag = False
+        if key in IS_STRING_PARAMS:
+            if value.lower() not in student_dict.get(key, "").lower():
+                return False
+        else:
+            if value != student_dict[key]:
+                return False
+    return True
 
-        if group:
-            if student.group == group:
-                flag = True
-            else:
-                flag = False
-                continue
 
-        if name:
-            if name.lower() in student.name.lower():
-                flag = True
-            else:
-                flag = False
-                continue
-
-        if isu:
-            if student.isu == isu:
-                flag = True
-            else:
-                flag = False
-                continue
-
-        if dormitory:
-            if student.dormitory == dormitory:
-                flag = True
-            else:
-                flag = False
-                continue
-
-        if room:
-            if student.room == room:
-                flag = True
-            else:
-                flag = False
-                continue
-
-        if check_in:
-            if check_in == student.check_in:
-                flag = True
-            else:
-                flag = False
-                continue
-
-        if is_foreigner is not None:
-            if is_foreigner == student.is_foreigner:
-                flag = True
-            else:
-                flag = False
-                continue
-
-        if notes:
-            if student.notes and notes.lower() in student.notes.lower():
-                flag = True
-            else:
-                flag = False
-                continue
-
-        if flag:
-            list_students.append(student)
-
-    return list_students
+async def check_student(students: list, filters: StudentFilter) -> list:
+    return list(filter(lambda x: student_filter(x, filters), students))
