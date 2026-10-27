@@ -1,5 +1,6 @@
-from datetime import date
+import datetime
 from typing import Optional
+
 
 from app.core.db import engine
 from app.models import Student, StudentUpdate
@@ -130,7 +131,7 @@ async def check_student(
     isu: Optional[int],
     dormitory: Optional[int],
     room: Optional[int],
-    check_in: Optional[date],
+    check_in: Optional[datetime.date],
     is_foreigner: Optional[bool],
     notes: Optional[str],
     ) -> list:
