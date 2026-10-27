@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 from typing import Optional
 
 from app.core.db import engine

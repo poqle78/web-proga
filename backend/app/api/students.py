@@ -74,7 +74,6 @@ async def patch_student(isu: int, student: StudentUpdate):
     return new_student
 
 
-
 @router.delete("/{isu}", status_code=204)
 async def del_student(isu: int):
     result = await delete_student(isu)
