@@ -183,7 +183,7 @@ studentForm.addEventListener("submit", async function (event) {
         group: group.value.trim(),
         isu: parseInt(isuInput.value.trim()),
         dormitory: parseInt(dormNum.value.trim()),
-        room: parseInt(dormNum.value.trim()),
+        room: parseInt(room.value.trim()),
         check_in: date.value,
         is_foreign: document.getElementById("isNoRu").checked,
         notes: notes.value.trim()
