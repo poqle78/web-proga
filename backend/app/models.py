@@ -16,7 +16,7 @@ class Student(BaseModel):
     dormitory: int = Field(ge=1, le=99, description="Номер общежития, например 8")
     room: StrictInt = Field(ge=1, le=999, description="Номер комнаты")
     check_in: date = Field(description="Срок заселения")
-    is_foreign: StrictBool = Field(
+    is_foreigner: StrictBool = Field(
         default=False, description="Является ли студент иностранцем"
     )
     notes: str = Field(default="", description="Заметки")
@@ -48,7 +48,7 @@ class StudentUpdate(BaseModel):
     dormitory: Optional[int] = Field(default=None, ge=1, le=99)
     room: Optional[StrictInt] = Field(default=None, ge=1)
     check_in: Optional[date] = None
-    is_foreign: Optional[StrictBool] = None
+    is_foreigner: Optional[StrictBool] = None
     notes: Optional[str] = None
 
     @field_validator("name")
@@ -69,3 +69,13 @@ class StudentUpdate(BaseModel):
             raise ValueError("В имени могут быть только буквы")
 
         return value
+
+class StudentFilter(BaseModel):
+    group: Optional[str] = None
+    name: Optional[str] = None
+    isu: Optional[int] = None
+    dormitory: Optional[int] = None
+    room: Optional[int] = None
+    check_in: Optional[date] = None
+    is_foreigner: Optional[bool] = None
+    notes: Optional[str] = None

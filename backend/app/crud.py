@@ -41,8 +41,6 @@ async def create_student(student: Student) -> None:
     pk = str(student_dict.pop("isu"))
     student_dict["check_in"] = dump_date(student_dict["check_in"])
     data["students"][pk] = student_dict
-    print(student_dict)
-    print(data)
     engine.set_dirty(True)
     await engine.write(data)
 
@@ -67,7 +65,11 @@ async def update_student(isu: int, new_student: StudentUpdate | dict) -> Student
     current_student["check_in"] = load_date(current_student["check_in"])
 
     if isinstance(new_student, StudentUpdate):
-        new_student_dict = new_student.model_dump(exclude_unset=True)
+        new_student_dict = {
+            k: v
+            for k, v in new_student.model_dump(exclude_unset=True).items()
+            if v is not None
+        }
     else:
         new_student_dict = new_student
 
@@ -78,11 +80,13 @@ async def update_student(isu: int, new_student: StudentUpdate | dict) -> Student
     student_dict = student.model_dump()
     new_isu = student_dict.pop("isu")
     if new_isu != isu:
-        await delete_student(isu)
+        del data["students"][str(isu)]
     student_dict["check_in"] = dump_date(student_dict["check_in"])
     data["students"][str(new_isu)] = student_dict
     engine.set_dirty(True)
     await engine.write(data)
+
+    return student
 
 
 async def delete_student(isu: int) -> bool:
@@ -126,10 +130,22 @@ async def check_student(
     isu: Optional[int],
     dormitory: Optional[int],
     room: Optional[int],
-    check_in: Optional[datetime.date],
+    check_in: Optional[date],
     is_foreigner: Optional[bool],
     notes: Optional[str],
-) -> list:
+    ) -> list:
+    if (
+        group is None
+        and name is None
+        and isu is None
+        and dormitory is None
+        and room is None
+        and check_in is None
+        and is_foreigner is None
+        and notes is None
+    ):
+        return students
+
     list_students = []
 
     for student in students:

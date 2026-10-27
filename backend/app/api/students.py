@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from typing import Optional
 from datetime import date
 
-from app.models import Student, StudentUpdate
+from app.models import Student, StudentUpdate, StudentFilter
 from app.crud import *
 
 router = APIRouter(tags=["students"], prefix="/students")
@@ -20,24 +20,25 @@ async def read_root(
     notes: Optional[str] = None,
 ):
     students = await get_all_students()
-
-    if (
-        group is None
-        and name is None
-        and isu is None
-        and dormitory is None
-        and room is None
-        and check_in is None
-        and notes is None
-        and is_foreigner is None
-    ):
-        return students
-
-    list_students = await check_student(
+    return await check_student(
         students, group, name, isu, dormitory, room, check_in, is_foreigner, notes
     )
 
-    return list_students
+
+@router.api_route("", methods=["QUERY"])
+async def query_students(filters: StudentFilter):
+    students = await get_all_students()
+    return await check_student(
+        students,
+        filters.group,
+        filters.name,
+        filters.isu,
+        filters.dormitory,
+        filters.room,
+        filters.check_in,
+        filters.is_foreigner,
+        filters.notes,
+    )
 
 
 @router.get("/{isu}")
@@ -51,7 +52,8 @@ async def read_student(isu: int):
 @router.post("", status_code=201)
 async def post_student(student: Student):
     try:
-        return await create_student(student)
+        await create_student(student)
+        return student
     except KeyError:
         raise HTTPException(status_code=409, detail="Студент с таким ИСУ уже есть!")
 
@@ -61,6 +63,7 @@ async def upd_student(isu: int, student: StudentUpdate):
     new_student = await update_student(isu, student)
     if new_student is None:
         raise HTTPException(status_code=404, detail="Студента с таким ИСУ нет!")
+    return new_student
 
 
 @router.patch("/{isu}")
@@ -68,6 +71,7 @@ async def patch_student(isu: int, student: StudentUpdate):
     new_student = await update_student(isu, student)
     if new_student is None:
         raise HTTPException(status_code=404, detail="Студента с таким ИСУ нет!")
+    return new_student
 
 
 @router.delete("/{isu}", status_code=204)
