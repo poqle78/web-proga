@@ -41,7 +41,9 @@ class Student(BaseModel):
     @field_validator("check_in")
     @classmethod
     def validate_date(cls, value: date) -> date:
-        if datetime.now() - timedelta(days=365 * 10) >= datetime(value.year, value.month, value.day):
+        if datetime.now() - timedelta(days=365 * 10) >= datetime(
+            value.year, value.month, value.day
+        ):
             raise ValueError("Date is more than 10 years ago")
         if datetime(value.year, value.month, value.day) >= datetime.now():
             raise ValueError("Date in future")
@@ -82,11 +84,14 @@ class StudentUpdate(BaseModel):
     @field_validator("check_in")
     @classmethod
     def validate_date(cls, value: date) -> date:
-        if datetime.now() - timedelta(days=365 * 10) >= datetime(value.year, value.month, value.day):
+        if datetime.now() - timedelta(days=365 * 10) >= datetime(
+            value.year, value.month, value.day
+        ):
             raise ValueError("Date is more than 10 years ago")
         if datetime(value.year, value.month, value.day) >= datetime.now():
             raise ValueError("Date in future")
         return value
+
 
 class StudentFilter(BaseModel):
     group: Optional[str] = None

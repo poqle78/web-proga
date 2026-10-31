@@ -133,6 +133,7 @@ async def student_exists(isu: int) -> bool:
 
 IS_STRING_PARAMS = ["name", "notes"]
 
+
 def student_filter(student: Student, filters: StudentFilter) -> bool:
     student_dict = student.model_dump()
     for key, value in filters.model_dump().items():
