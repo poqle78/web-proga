@@ -1,11 +1,33 @@
-<server description="defaultServer">
+<server description="student-service">
     <featureManager>
         <feature>webProfile-11.0</feature>
+        <feature>jdbc-4.3</feature>
+        <feature>bells-1.0</feature>
+        <feature>mpHealth-4.0</feature>
     </featureManager>
-    <basicRegistry id="defaultBasicRegistry" realm="BasicRealm">
-        <user name="username" password="password" />
-    </basicRegistry>
-    <keyStore id="defaultKeyStore" password="password" />
+
+    <variable name="http.port"   defaultValue="9080"/>
+    <variable name="db.host"     defaultValue="localhost"/>
+    <variable name="db.port"     defaultValue="5432"/>
+    <variable name="db.name"     defaultValue="school"/>
+    <variable name="db.user"     defaultValue="school"/>
+    <variable name="db.password" defaultValue="secret"/>
+
+    <library id="HibernateLib">
+        <fileset dir="${shared.resource.dir}/hibernate" includes="*.jar"/>
+    </library>
+    <bell libraryRef="HibernateLib"/>
+
+    <library id="PostgresLib">
+        <fileset dir="${shared.resource.dir}/postgresql" includes="*.jar"/>
+    </library>
+    <dataSource id="StudentDS" jndiName="jdbc/StudentDS">
+        <jdbcDriver libraryRef="PostgresLib"/>
+        <properties.postgresql serverName="${db.host}" portNumber="${db.port}"
+                               databaseName="${db.name}"
+                               user="${db.user}" password="${db.password}"/>
+    </dataSource>
+
     <httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="9080" httpsPort="9443" />
     <webApplication location="student-service.war" contextRoot="/"/>
 </server>

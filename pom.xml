@@ -22,6 +22,9 @@
         <compiler-plugin.version>3.15.0</compiler-plugin.version>
         <war-plugin.version>3.5.1</war-plugin.version>
         <liberty-plugin.version>3.12.0</liberty-plugin.version>
+        <liberty.version>26.0.0.7</liberty.version>
+        <hibernate.version>7.4.14.Final</hibernate.version>
+        <postgres.version>42.7.14</postgres.version>
     </properties>
 
     <dependencies>
@@ -29,6 +32,19 @@
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-web-api</artifactId>
             <version>${jakartaee-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgres.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -52,6 +68,30 @@
                 <groupId>io.openliberty.tools</groupId>
                 <artifactId>liberty-maven-plugin</artifactId>
                 <version>${liberty-plugin.version}</version>
+                <configuration>
+                <runtimeArtifact>
+                    <groupId>io.openliberty</groupId>
+                    <artifactId>openliberty-runtime</artifactId>
+                    <version>${liberty.version}</version>
+                    <type>zip</type>
+                </runtimeArtifact>
+                <copyDependencies>
+                    <dependencyGroup>
+                        <location>${project.build.directory}/liberty/wlp/usr/shared/resources/hibernate</location>
+                        <dependency>
+                            <groupId>org.hibernate.orm</groupId>
+                            <artifactId>hibernate-core</artifactId>
+                        </dependency>
+                    </dependencyGroup>
+                    <dependencyGroup>
+                        <location>${project.build.directory}/liberty/wlp/usr/shared/resources/postgresql</location>
+                        <dependency>
+                            <groupId>org.postgresql</groupId>
+                            <artifactId>postgresql</artifactId>
+                        </dependency>
+                    </dependencyGroup>
+                </copyDependencies>
+                </configuration>
             </plugin>
         </plugins>
     </build>
