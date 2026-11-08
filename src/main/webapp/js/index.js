@@ -19,7 +19,7 @@ function readFilters() {
   const roomNumber = filterRoomInput.value.trim();
   const isu = filterIsuIdInput.value.trim();
   const check_in = filterMoveInDateInput.value;
-  const is_foregin = filterIsForeignSelect.value;
+  const is_foreigner = filterIsForeignSelect.value;
   const notes = filterNotesInput.value.trim();
 
   if (name) {
@@ -40,8 +40,8 @@ function readFilters() {
   if (check_in) {
     filters.check_in = check_in;
   }
-  if (is_foregin !== "") {
-    filters.is_foregin = is_foregin === "true";
+  if (is_foreigner !== "") {
+    filters.is_foreigner = is_foreigner === "true";
   }
   if (notes) {
     filters.notes = notes;

@@ -36,7 +36,7 @@ if (url.searchParams.get('isu')) {
         }
         date.value = check_in;
         notes.setAttribute('value', originalStudent.notes ?? "");
-        document.getElementById("isNoRu").checked = originalStudent.is_foreign;
+        document.getElementById("isNoRu").checked = originalStudent.is_foreigner;
 
     })();
 }
@@ -185,7 +185,7 @@ studentForm.addEventListener("submit", async function (event) {
         dormitory: parseInt(dormNum.value.trim()),
         room: parseInt(room.value.trim()),
         check_in: date.value,
-        is_foreign: document.getElementById("isNoRu").checked,
+        is_foreigner: document.getElementById("isNoRu").checked,
         notes: notes.value.trim()
     };
 

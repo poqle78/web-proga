@@ -1,12 +1,11 @@
 package funn.j2k.web.student;
 
-import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 public class Student implements Serializable {
@@ -16,27 +15,31 @@ public class Student implements Serializable {
 
     @Column(nullable = false)
     private String name;
-    @Column(name = "group_name")
+    @Column(name = "group_name", nullable = false)
     private String group;
+    @Column(nullable = false)
     private Integer dormitory;
+    @Column(nullable = false)
     private Integer room;
-    @JsonbDateFormat("dd-MM-yyyy")
-    private Date checkIn;
-    private Boolean isForeigner;
-    private String notes;
+    @Column(nullable = false)
+    private LocalDate check_in;
+    @Column(nullable = false)
+    private Boolean is_foreigner;
+    @Column(nullable = false)
+    private String notes = "";
 
     public Student() {
     }
 
     public Student(Integer isu, String name, String group, Integer dormitory,
-                   Integer room, Date checkIn, Boolean isForeigner, String notes) {
+                   Integer room, LocalDate check_in, Boolean is_foreigner, String notes) {
         this.isu = isu;
         this.name = name;
         this.group = group;
         this.dormitory = dormitory;
         this.room = room;
-        this.checkIn = checkIn;
-        this.isForeigner = isForeigner;
+        this.check_in = check_in;
+        this.is_foreigner = is_foreigner;
         this.notes = notes;
     }
 
@@ -80,20 +83,20 @@ public class Student implements Serializable {
         this.room = room;
     }
 
-    public Date getCheckIn() {
-        return checkIn;
+    public LocalDate getCheckIn() {
+        return check_in;
     }
 
-    public void setCheckIn(Date checkIn) {
-        this.checkIn = checkIn;
+    public void setCheckIn(LocalDate check_in) {
+        this.check_in = check_in;
     }
 
     public Boolean getIsForeigner() {
-        return isForeigner;
+        return is_foreigner;
     }
 
-    public void setIsForeigner(Boolean isForeigner) {
-        this.isForeigner = isForeigner;
+    public void setIsForeigner(Boolean is_foreigner) {
+        this.is_foreigner = is_foreigner;
     }
 
     public String getNotes() {

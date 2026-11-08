@@ -9,6 +9,7 @@ import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class StudentService {
