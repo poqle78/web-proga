@@ -257,3 +257,4 @@ replay_pid*
 /data/eclipsefdn_projects.yaml
 /data/videos/
 .DS_Store
+server.env

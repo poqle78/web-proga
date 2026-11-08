@@ -16,6 +16,7 @@ public class Student implements Serializable {
 
     @Column(nullable = false)
     private String name;
+    @Column(name = "group_name")
     private String group;
     private Integer dormitory;
     private Integer room;
