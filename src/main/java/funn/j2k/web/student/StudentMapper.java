@@ -2,6 +2,7 @@ package funn.j2k.web.student;
 
 import funn.j2k.web.student.dto.CreateStudentRequest;
 import funn.j2k.web.student.dto.StudentResponse;
+import funn.j2k.web.student.dto.UpdateStudentRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 
 
@@ -20,6 +21,13 @@ public class StudentMapper {
         s.setCheckIn(r.check_in());
         s.setIsForeigner(r.is_foreigner());
         s.setNotes(r.notes());
+        return s;
+    }
+
+    public Student updateEntity(UpdateStudentRequest r) {
+        Student s = new Student();
+        if (r.isu() != null)
+            s.setIsu(r.isu());
         return s;
     }
 }
