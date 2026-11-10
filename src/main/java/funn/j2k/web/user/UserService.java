@@ -8,6 +8,8 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 
+import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 @ApplicationScoped
@@ -28,5 +30,22 @@ public class UserService {
         u.setRoles(r.roles() == null || r.roles().isEmpty() ? Set.of(Role.USER) : r.roles());
         repo.persist(u);
         return mapper.toResponse(u);
+    }
+
+    @Transactional
+    public UserResponse createAdminIfNotExists(String username, String email, String rawPassword) {
+        Optional<User> existing = repo.findByUsername(username);
+        if (existing.isPresent()) {
+            return mapper.toResponse(existing.get());
+        }
+
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email.toLowerCase(Locale.ROOT));
+        user.setPasswordHash(passwords.hash(rawPassword));
+        user.setRoles(Set.of(Role.ADMIN));
+
+        repo.persist(user);
+        return mapper.toResponse(user);
     }
 }
