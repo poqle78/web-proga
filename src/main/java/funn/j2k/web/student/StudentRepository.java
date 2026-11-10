@@ -36,7 +36,7 @@ public class StudentRepository {
     public void delete(Integer isu) {
         logger.info("Deleting student by isu " + isu);
         var student = findByIsu(isu)
-                .orElseThrow(() -> new IllegalArgumentException("Invalisu student Isu:" + isu));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid isu student Isu:" + isu));
         em.remove(student);
     }
 
