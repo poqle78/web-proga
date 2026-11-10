@@ -9,7 +9,6 @@
         <feature>bells-1.0</feature>
         <feature>mpHealth-4.0</feature>
         <feature>appSecurity-6.0</feature>
-        <feature>mpJwt-2.1</feature>
     </featureManager>
 
     <bell libraryRef="hibernate"/>

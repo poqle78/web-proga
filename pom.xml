@@ -25,6 +25,7 @@
         <liberty.version>26.0.0.7</liberty.version>
         <hibernate.version>7.4.14.Final</hibernate.version>
         <postgres.version>42.7.14</postgres.version>
+        <jjwt.version>0.13.0</jjwt.version>
     </properties>
 
     <dependencies>
@@ -33,6 +34,26 @@
             <artifactId>jakarta.jakartaee-web-api</artifactId>
             <version>${jakartaee-api.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-gson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
@@ -63,7 +84,6 @@
                 <version>${war-plugin.version}</version>
             </plugin>
 
-            <!-- Execute 'mvn clean package liberty:run' to run the application.  -->
             <plugin>
                 <groupId>io.openliberty.tools</groupId>
                 <artifactId>liberty-maven-plugin</artifactId>
