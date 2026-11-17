@@ -36,6 +36,13 @@ public class StudentService {
 
     @Transactional(Transactional.TxType.SUPPORTS)
     public PageResponse<StudentResponse> search(StudentSearchRequest req) {
+        if (req.page() < 0) {
+            throw new BadRequestException("Номер страницы не может быть отрицательным");
+        }
+
+        if (req.size() < 1 || req.size() > 100) {
+            throw new BadRequestException("Размер страницы должен быть от 1 до 100");
+        }
         SearchResult r = repo.search(req);
         return mapper.searchResultToPage(r, req);
     }
@@ -59,7 +66,6 @@ public class StudentService {
     public StudentResponse update(Integer isu, UpdateStudentRequest req) {
         Student s = findOrThrow(isu);
         s.setName(req.name().trim());
-        s.setIsu(req.isu());
         s.setGroup(req.group().trim());
         s.setDormitory(req.dormitory());
         s.setRoom(req.room());
@@ -67,42 +73,41 @@ public class StudentService {
         s.setIsForeigner(req.is_foreigner());
         s.setNotes(req.notes() == null ? "" : req.notes());
         logger.info("(put) update student" + isu);
-        return mapper.toResponse(repo.update(s));
+        return mapper.toResponse(s);
     }
 
     @Transactional
     public StudentResponse patch(Integer isu, PatchStudentRequest req) {
         boolean nothingToChange = req.name() == null && req.group() == null
                 && req.dormitory() == null && req.room() == null
-                && req.check_in() == null && req.is_foreigner() == null
+                && req.checkIn() == null && req.isForeigner() == null
                 && req.notes() == null;
         if (nothingToChange) {
             throw new BadRequestException("no changes!");
         }
 
         Student s = findOrThrow(isu);
-        s.setIsu(req.isu());
         if (req.name() != null) s.setName(req.name().trim());
         if (req.group() != null) s.setGroup(req.group().trim());
         if (req.dormitory() != null) s.setDormitory(req.dormitory());
         if (req.room() != null) s.setRoom(req.room());
-        if (req.check_in() != null) s.setCheckIn(req.check_in());
-        if (req.is_foreigner() != null) s.setIsForeigner(req.is_foreigner());
+        if (req.checkIn() != null) s.setCheckIn(req.checkIn());
+        if (req.isForeigner() != null) s.setIsForeigner(req.isForeigner());
         if (req.notes() != null) s.setNotes(req.notes());
         logger.info("(patch) update student" + isu);
-        return mapper.toResponse(repo.update(s));
+        return mapper.toResponse(s);
     }
 
     @Transactional
     public void delete(Integer isu) {
-        findOrThrow(isu);
-        repo.delete(isu);
-        logger.info("(delete) delete student" + isu);
+        Student student = findOrThrow(isu);
+        repo.delete(student);
+        logger.info("(delete) delete student " + isu);
     }
 
 
     private Student findOrThrow(Integer isu) {
         return repo.findByIsu(isu)
-                .orElseThrow(() -> new NotFoundException("student" + isu + "is not found"));
+                .orElseThrow(() -> new NotFoundException("student " + isu + " is not found"));
     }
 }

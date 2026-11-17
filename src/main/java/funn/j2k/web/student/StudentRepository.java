@@ -36,10 +36,11 @@ public class StudentRepository {
         query.select(student).where(predicates(cb, student, req));
 
         List<Order> orders;
-        String sortBy = req.sortBy() != null ? req.sortBy() : "id";
-        Order mainOrder = req.sortDirection().equalsIgnoreCase("desc") ? cb.desc(student.get(sortBy)) : cb.asc(student.get(sortBy));
-        if (!sortBy.equals("id")) {
-            orders = List.of(mainOrder, cb.asc(student.get("id")));
+        String sortBy = req.sortBy() != null ? req.sortBy() : "isu";
+
+        Order mainOrder = "desc".equalsIgnoreCase(req.sortDirection()) ? cb.desc(student.get(sortBy)) : cb.asc(student.get(sortBy));
+        if (!sortBy.equals("isu")) {
+            orders = List.of(mainOrder, cb.asc(student.get("isu")));
         } else {
             orders = List.of(mainOrder);
         }
@@ -64,8 +65,8 @@ public class StudentRepository {
         if (r.group() != null) p.add(cb.equal(s.get("group"), r.group()));
         if (r.dormitory() != null) p.add(cb.equal(s.get("dormitory"), r.dormitory()));
         if (r.room() != null) p.add(cb.equal(s.get("room"), r.room()));
-        if (r.checkIn() != null) p.add(cb.equal(s.get("checkIn"), r.checkIn()));
-        if (r.isForeigner() != null) p.add(cb.equal(s.get("foreigner"), r.isForeigner()));
+        if (r.checkIn() != null) p.add(cb.equal(s.get("check_in"), r.checkIn()));
+        if (r.isForeigner() != null) p.add(cb.equal(s.get("is_foreigner"), r.isForeigner()));
         if (r.notes() != null) p.add(cb.like(cb.lower(s.get("notes")), "%" + r.notes().toLowerCase(Locale.ROOT) + "%"));
         return p;
     }
@@ -80,10 +81,8 @@ public class StudentRepository {
         return Optional.ofNullable(em.find(Student.class, isu));
     }
 
-    public void delete(Integer isu) {
-        logger.info("Deleting student by isu " + isu);
-        var student = findByIsu(isu)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid isu student Isu:" + isu));
+    public void delete(Student student) {
+        logger.info("Deleting student by isu " + student.getIsu());
         em.remove(student);
     }
 

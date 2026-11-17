@@ -29,9 +29,9 @@ public class StudentResource {
     private StudentService service;
 
     @GET
-    public List<StudentResponse> list() {
+    public PageResponse<StudentResponse> list() {
         logger.info("GET /students");
-        return service.list();
+        return service.search(new StudentSearchRequest(null, null, null, null, null, null, null, null, null, null, null, null));
     }
 
     @QUERY

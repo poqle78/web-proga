@@ -16,8 +16,8 @@ public class StudentMapper {
         s.setGroup(r.group());
         s.setDormitory(r.dormitory());
         s.setRoom(r.room());
-        s.setCheckIn(r.check_in());
-        s.setIsForeigner(r.is_foreigner());
+        s.setCheckIn(r.checkIn());
+        s.setIsForeigner(r.isForeigner());
         s.setNotes(r.notes());
         return s;
     }
