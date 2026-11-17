@@ -96,22 +96,22 @@
         <table id="studsTable">
             <tbody>
                 <tr>
-                    <td>ФИО</td>
-                    <td>Группа</td>
-                    <td>ИСУ ID</td>
-                    <td>Общежитие</td>
-                    <td>Комната</td>
-                    <td>Срок заселения</td>
-                    <td>Действия</td>
+                    <th data-sort="name">ФИО</th>
+                    <th data-sort="group">Группа</th>
+                    <th data-sort="isu">ИСУ ID</th>
+                    <th data-sort="dormitory">Общежитие</th>
+                    <th data-sort="room">Комната</th>
+                    <th data-sort="check_in">Срок заселения</th>
+                    <th>Действия</th>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <div class="pagination">
-        <button type="button" id="prevPage">← Назад</button>
+        <button type="button" id="prevPage" hidden>← Назад</button>
         <span id="pageInfo">Страница 1</span>
-        <button type="button" id="nextPage">Вперёд →</button>
+        <button type="button" id="nextPage" hidden>Вперёд →</button>
     </div>
 
     <button onclick="location.href = 'form.html';" id="myButton" class="float-left submit-button">Добавить

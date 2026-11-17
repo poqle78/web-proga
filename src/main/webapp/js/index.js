@@ -13,6 +13,16 @@ const filterNotesInput = document.getElementById("filterNotes");
 const applyFiltersButton = document.getElementById("applyFilters");
 const resetFiltersButton = document.getElementById("resetFilters");
 
+const backButton = document.getElementById("prevPage");
+const nextButton = document.getElementById("nextPage");
+const pageInfo = document.getElementById("pageInfo");
+
+let currentPage = 0;
+let sortBy = null;
+let sortDirection = "asc";
+let appliedFilters = {};
+
+const PAGE_SIZE = 15
 
 function readFilters() {
   const filters = {};
@@ -56,32 +66,47 @@ function readFilters() {
 
 
 async function loadStudents(filters = {}) {
+  pageInfo.textContent = "Страница " + (currentPage + 1);
   try {
-    const students = getAllStudent(filters);
-    updateTable(students);
+    const params = {
+      ...appliedFilters,
+      page: currentPage,
+      size: PAGE_SIZE,
+    };
+
+    if (sortBy) {
+      params.sortBy = sortBy;
+      params.sortDirection = sortDirection;
+    }
+    const students = getAllStudent(params);
+    await updateTable(students);
   } catch (error) {
     console.error("Ошибка загрузки студентов:", error);
   }
 }
 
-
 async function applyFilters() {
-  const filters = readFilters();
-  await loadStudents(filters);
+  appliedFilters = readFilters();
+  currentPage = 0;
+  await loadStudents();
 }
 
-function resetFilters() {
-    filterFullNameInput.value = "";
-    filterGroupInput.value = "";
-    filterDormitoryInput.value = "";
-    filterMoveInDateInput.value = "";
-    filterIsForeignSelect.value = "";
-    filterNotesInput.value = "";
-    filterRoomInput.value = "";
-    filterIsuIdInput.value = "";
+async function resetFilters() {
+  filterFullNameInput.value = "";
+  filterGroupInput.value = "";
+  filterDormitoryInput.value = "";
+  filterMoveInDateInput.value = "";
+  filterIsForeignSelect.value = "";
+  filterNotesInput.value = "";
+  filterRoomInput.value = "";
+  filterIsuIdInput.value = "";
 
-    loadStudents();
+  appliedFilters = {};
+  currentPage = 0;
+
+  await loadStudents();
 }
+
 
 function rowToStudent(cells) {
   return {
@@ -165,12 +190,16 @@ function addToTable(student) {
 
 
 async function updateTable(get_students_func) {
-  let studentFromDB = []
+  let responseFromDB = {}
   try {
-    studentFromDB = await get_students_func;
+    responseFromDB = await get_students_func;
   } catch (error) {
     console.error("Ошибка загрузки студентов:", error);
   }
+  let studentFromDB = responseFromDB.items;
+
+  nextButton.hidden = !responseFromDB.hasNext;
+  backButton.hidden = responseFromDB.page === 0;
 
   const studentsMap = {};
   studentFromDB.forEach(element => {
@@ -199,8 +228,53 @@ async function updateTable(get_students_func) {
   }
   Object.entries(studentsMap).forEach(([_, value]) => { addToTable(value) });
 }
-updateTable(getAllStudent({}));
+
+loadStudents()
 // const intervalId = setInterval(updateTable, 1000);
 
-applyFiltersButton.addEventListener("click", applyFilters);
-resetFiltersButton.addEventListener("click", resetFilters);
+applyFiltersButton.addEventListener("click", () => applyFilters());
+resetFiltersButton.addEventListener("click", () => resetFilters());
+
+backButton.addEventListener("click", async function () {
+  if (currentPage > 0) {
+    currentPage--;
+    await loadStudents();
+  }
+});
+
+nextButton.addEventListener("click", async function () {
+  currentPage++;
+  await loadStudents();
+});
+
+document.querySelectorAll("th[data-sort]").forEach(function (header) {
+  header.addEventListener("click", async function () {
+    await changeSort(header.dataset.sort);
+  });
+});
+
+function updateSortIndicators() {
+  document.querySelectorAll("th[data-sort]").forEach(function (header) {
+    const label = header.dataset.label || header.textContent;
+    header.dataset.label = label;
+
+    if (header.dataset.sort === sortBy) {
+      header.textContent = label + (sortDirection === "asc" ? " ▲" : " ▼");
+    } else {
+      header.textContent = label;
+    }
+  });
+}
+
+async function changeSort(field) {
+  if (sortBy === field) {
+    sortDirection = sortDirection === "asc" ? "desc" : "asc";
+  } else {
+    sortBy = field;
+    sortDirection = "asc";
+  }
+
+  currentPage = 0;
+  updateSortIndicators();
+  await loadStudents();
+}

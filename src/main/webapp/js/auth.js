@@ -9,7 +9,6 @@ const Auth = (function () {
 
     let refreshPromise = null;
 
-    // Получение cookie
     function getCookie(name) {
         const prefix = encodeURIComponent(name) + "=";
         const cookie = document.cookie
@@ -21,7 +20,6 @@ const Auth = (function () {
             : null;
     }
 
-    // Определение времени жизни JWT по exp
     function getTokenMaxAge(token, fallback) {
         const payload = decodePayload(token);
 
@@ -32,7 +30,6 @@ const Auth = (function () {
         return fallback;
     }
 
-    // Сохранение cookie
     function setCookie(name, value, maxAge) {
         let cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
         cookie += `; Path=${COOKIE_PATH}`;
@@ -79,7 +76,6 @@ const Auth = (function () {
         return Boolean(getAccessToken() && getRefreshToken());
     }
 
-    // Декодирование JWT
     function decodePayload(token) {
         try {
             const base64 = token.split(".")[1]
@@ -117,7 +113,7 @@ const Auth = (function () {
 
         return {
             username: payload.sub,
-            role: payload.role
+            role: payload.roles
         };
     }
 
@@ -191,7 +187,6 @@ const Auth = (function () {
         return response.json();
     }
 
-    // Один общий refresh для параллельных запросов
     function refreshTokens() {
         if (refreshPromise) {
             return refreshPromise;
@@ -227,7 +222,6 @@ const Auth = (function () {
         return refreshPromise;
     }
 
-    // API-запросы с Authorization: Bearer
     async function apiFetch(url, options = {}) {
         async function send() {
             const headers = new Headers(options.headers || {});

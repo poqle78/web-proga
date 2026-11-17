@@ -53,6 +53,21 @@ caption {
   padding: 10px;
 }
 
+.user-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.user-bar button {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #cccccc;
+    border-radius: 0.375rem;
+    background-color: #eeeeee;
+}
+
 .filters {
     display: flex;
     flex-direction: column;
@@ -98,4 +113,31 @@ caption {
 
 .filter-actions button:hover {
     background-color: #eee;
+}
+.sort-button {
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 4px;
+}
+
+.sort-button:hover {
+    color: #2563eb;
+}
+
+.sort-icon {
+    color: #999;
+    font-size: 14px;
+}
+
+.sort-button.active .sort-icon {
+    color: #2563eb;
 }
