@@ -1,13 +1,14 @@
 package funn.j2k.web.user;
 
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 import java.util.Optional;
 
-@Stateless
+@ApplicationScoped
+@Transactional
 public class UserRepository {
     @PersistenceContext
     private EntityManager em;
@@ -44,7 +45,6 @@ public class UserRepository {
                 .getResultStream().findFirst();
     }
 
-    @Transactional
     public void persist(User user) {
         em.persist(user);
     }

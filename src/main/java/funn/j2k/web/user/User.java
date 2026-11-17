@@ -7,6 +7,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(
+        name = "users",
+        indexes = {@Index(columnList = "id"), @Index(columnList = "username"), @Index(columnList = "email")}
+)
 public class User implements Serializable {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
