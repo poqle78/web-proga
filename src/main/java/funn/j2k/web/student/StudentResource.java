@@ -8,11 +8,13 @@ import jakarta.ws.rs.core.*;
 
 import java.lang.annotation.*;
 import java.net.URI;
+import java.util.List;
 import java.util.logging.Logger;
 
 
 @Path("students")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class StudentResource {
 
     @Target(ElementType.METHOD)
@@ -27,40 +29,15 @@ public class StudentResource {
     private StudentService service;
 
     @GET
-    public PageResponse<StudentResponse> list(
-            @QueryParam("q") String q,
-            @QueryParam("group") String group,
-            @QueryParam("dormitory") String dormitory,
-            @QueryParam("room") String room,
-            @QueryParam("is_foreigner") String isForeigner,
-            @QueryParam("sort") String sort,
-            @QueryParam("order") String order,
-            @QueryParam("page") String page,
-            @QueryParam("size") String size) {
+    public List<StudentResponse> list() {
         logger.info("GET /students");
-        return service.search(new StudentSearchRequest(
-                q, group,
-                parseInt("dormitory", dormitory),
-                parseInt("room", room),
-                parseBoolean("is_foreigner", isForeigner),
-                sort, order,
-                parseInt("page", page),
-                parseInt("size", size)));
+        return service.list();
     }
 
     @QUERY
-    @Consumes(MediaType.APPLICATION_JSON)
-    public PageResponse<StudentResponse> query(StudentSearchRequest criteria) {
+    public PageResponse<StudentResponse> search(@Valid StudentSearchRequest req) {
         logger.info("QUERY /students");
-        return service.search(orEmpty(criteria));
-    }
-
-    @POST
-    @Path("search")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public PageResponse<StudentResponse> searchPost(StudentSearchRequest criteria) {
-        logger.info("POST /students/search");
-        return service.search(orEmpty(criteria));
+        return service.search(req == null ? new StudentSearchRequest(null, null, null, null, null, null, null, null, null, null, null, null) : req);
     }
 
     @GET
@@ -71,7 +48,6 @@ public class StudentResource {
     }
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response create(@Valid CreateStudentRequest req, @Context UriInfo uriInfo) {
         requireBody(req);
         StudentResponse created = service.create(req);
@@ -82,7 +58,6 @@ public class StudentResource {
 
     @PUT
     @Path("{isu}")
-    @Consumes(MediaType.APPLICATION_JSON)
     public StudentResponse update(@PathParam("isu") Integer isu, @Valid UpdateStudentRequest req) {
         requireBody(req);
         requireSameIsu(isu, req.isu());
@@ -92,7 +67,6 @@ public class StudentResource {
 
     @PATCH
     @Path("{isu}")
-    @Consumes(MediaType.APPLICATION_JSON)
     public StudentResponse patch(@PathParam("isu") Integer isu, @Valid PatchStudentRequest req) {
         requireBody(req);
         requireSameIsu(isu, req.isu());
@@ -105,7 +79,7 @@ public class StudentResource {
     public Response delete(@PathParam("isu") Integer isu) {
         logger.info("DELETE /students/" + isu);
         service.delete(isu);
-        return Response.noContent().build(); // 204
+        return Response.noContent().build();
     }
 
 
@@ -120,36 +94,5 @@ public class StudentResource {
         if (bodyIsu != null && !bodyIsu.equals(pathIsu)) {
             throw new BadRequestException("ИСУ в теле запроса не совпадает с ИСУ в адресе");
         }
-    }
-
-
-    private static StudentSearchRequest orEmpty(StudentSearchRequest criteria) {
-        return criteria != null
-                ? criteria
-                : new StudentSearchRequest(null, null, null, null, null, null, null, null, null);
-    }
-
-    private static Integer parseInt(String name, String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        try {
-            return Integer.valueOf(value.trim());
-        } catch (NumberFormatException e) {
-            throw new BadRequestException("Параметр '" + name + "' должен быть целым числом");
-        }
-    }
-
-    private static Boolean parseBoolean(String name, String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        if (value.equalsIgnoreCase("true")) {
-            return Boolean.TRUE;
-        }
-        if (value.equalsIgnoreCase("false")) {
-            return Boolean.FALSE;
-        }
-        throw new BadRequestException("Параметр '" + name + "' должен быть true или false");
     }
 }

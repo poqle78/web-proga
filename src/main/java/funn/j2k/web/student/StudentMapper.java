@@ -1,8 +1,6 @@
 package funn.j2k.web.student;
 
-import funn.j2k.web.student.dto.CreateStudentRequest;
-import funn.j2k.web.student.dto.StudentResponse;
-import funn.j2k.web.student.dto.UpdateStudentRequest;
+import funn.j2k.web.student.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 
 
@@ -29,5 +27,16 @@ public class StudentMapper {
         if (r.isu() != null)
             s.setIsu(r.isu());
         return s;
+    }
+
+    public PageResponse<StudentResponse> searchResultToPage(SearchResult r, StudentSearchRequest searchRequest) {
+        return new PageResponse<>(
+                r.items().stream().map(this::toResponse).toList(),
+                searchRequest.page(),
+                searchRequest.size(),
+                r.total(),
+                (r.total() + searchRequest.size() - 1) / searchRequest.size(),
+                (long) (searchRequest.page() + 1) * searchRequest.size() < r.total()
+        );
     }
 }

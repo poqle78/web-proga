@@ -17,11 +17,6 @@ public class StudentService {
 
     private static final Logger logger = Logger.getLogger(StudentService.class.getName());
 
-    private static final List<String> SORT_FIELDS =
-            List.of("isu", "name", "group", "dormitory", "room", "check_in");
-    private static final int DEFAULT_PAGE_SIZE = 20;
-    private static final int MAX_PAGE_SIZE = 100;
-
     @Inject
     StudentRepository repo;
 
@@ -35,36 +30,15 @@ public class StudentService {
     }
 
     @Transactional(Transactional.TxType.SUPPORTS)
-    public PageResponse<StudentResponse> search(StudentSearchRequest c) {
-        String sort = c.sort() != null ? c.sort() : "name";
-        String order = c.order() != null ? c.order() : "asc";
-        int page = c.page() != null ? c.page() : 0;
-        int size = c.size() != null ? c.size() : DEFAULT_PAGE_SIZE;
-
-        if (!SORT_FIELDS.contains(sort)) {
-            throw new BadRequestException(
-                    "not allowed sort: '" + sort + "'");
-        }
-        if (!order.equalsIgnoreCase("asc") && !order.equalsIgnoreCase("desc")) {
-            throw new BadRequestException("order must be asc or desc");
-        }
-        if (page < 0) {
-            throw new BadRequestException("page mustn't be negative");
-        }
-        if (size < 1 || size > MAX_PAGE_SIZE) {
-            throw new BadRequestException("size must be from 1 to " + MAX_PAGE_SIZE);
-        }
-
-        boolean ascending = order.equalsIgnoreCase("asc");
-        List<StudentResponse> items = repo
-                .search(c.q(), c.group(), c.dormitory(), c.room(), c.is_foreigner(), sort, ascending, page, size)
-                .stream().map(mapper::toResponse).toList();
-        long total = repo.count(c.q(), c.group(), c.dormitory(), c.room(), c.is_foreigner());
-
-        int totalPages = (int) ((total + size - 1) / size);
-        return new PageResponse<>(items, page, size, total, totalPages);
+    public List<StudentResponse> list() {
+        return repo.findAll().stream().map(mapper::toResponse).toList();
     }
 
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public PageResponse<StudentResponse> search(StudentSearchRequest req) {
+        SearchResult r = repo.search(req);
+        return mapper.searchResultToPage(r, req);
+    }
 
     @Transactional
     public StudentResponse create(CreateStudentRequest req) {
@@ -121,7 +95,7 @@ public class StudentService {
 
     @Transactional
     public void delete(Integer isu) {
-        findOrThrow(isu); // если студента нет, здесь вылетит 404
+        findOrThrow(isu);
         repo.delete(isu);
         logger.info("(delete) delete student" + isu);
     }

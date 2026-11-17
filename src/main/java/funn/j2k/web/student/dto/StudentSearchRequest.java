@@ -13,7 +13,7 @@ public record StudentSearchRequest (
         @Min(1) @Max(99) Integer dormitory,
         @Min(1) @Max(9999) Integer room,
         @JsonbDateFormat("yyyy-MM-dd") @JsonbProperty("check_in") @PastOrPresent LocalDate checkIn,
-        @JsonbProperty("is_foreigner") Boolean is_foreigner,
+        @JsonbProperty("is_foreigner") Boolean isForeigner,
         String notes,
         @Pattern(regexp="isu|name|group|dormitory|room|checkIn") String sortBy,
         @Pattern(regexp="asc|desc") String sortDirection,
