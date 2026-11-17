@@ -34,10 +34,10 @@ public class AuthService {
     RefreshTokenRepository refreshTokens;
 
     public TokenResponse login(LoginRequest req) {
-        String username = req.username().trim();
-        Optional<User> found = users.findByUsername(username)
+        String login = req.login().trim();
+        Optional<User> found = users.findByUsername(login)
                 .or(() -> users.findByEmail(
-                        req.email().trim()
+                        login
                 ));
 
         boolean ok = found
