@@ -38,6 +38,12 @@ public class UserRepository {
         return c != null && c > 0;
     }
 
+    public Optional<User> findById(Long id) {
+        return em.createQuery("select u from User u where u.id = :i", User.class)
+                .setParameter("i", id)
+                .getResultStream().findFirst();
+    }
+
     @Transactional
     public void persist(User user) {
         em.persist(user);
