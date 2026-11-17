@@ -9,6 +9,8 @@
         <jta-data-source>jdbc/StudentDS</jta-data-source>
 
         <class>funn.j2k.web.student.Student</class>
+        <class>funn.j2k.web.user.User</class>
+        <class>funn.j2k.web.auth.RefreshToken</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>
