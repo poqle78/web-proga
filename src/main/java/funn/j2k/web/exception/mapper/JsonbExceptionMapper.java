@@ -1,10 +1,9 @@
 package funn.j2k.web.exception.mapper;
 
-import funn.j2k.web.exception.FieldError;
+import funn.j2k.web.exception.dto.FieldError;
 import jakarta.json.bind.JsonbException;
-import jakarta.ws.rs.core.Context;
+import jakarta.validation.ValidationException;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
@@ -13,15 +12,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Provider
-public class JsonbExceptionMapper implements ExceptionMapper<JsonbException> {
+public class JsonbExceptionMapper implements ExceptionMapper<ValidationException> {
     private static final Pattern PROPERTY = Pattern.compile("property '([^']+)'");
 
     @Override
-    public Response toResponse(JsonbException e) {
-        Matcher m = PROPERTY.matcher(String.valueOf(e.getMessage()));
-        List<FieldError> errors = m.find()
-                ? List.of(new FieldError(m.group(1), "InvalidValue", "Недопустимое значение или формат"))
-                : null;
-        return Response.status(400).type("application/problem+json").entity(errors).build();
+    public Response toResponse(ValidationException e) {
+        String message = e.getMessage();
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity("{\"error\": \"" + message + "\"}")
+                .type("application/json")
+                .build();
     }
+
 }
