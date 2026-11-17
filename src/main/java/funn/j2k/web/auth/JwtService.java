@@ -34,11 +34,11 @@ public class JwtService {
     void init() {
         String secret = ConfigProvider.getOrDefault(ConfigKeys.JWT_SECRET, null);
         if (secret == null || secret.isBlank()) {
-            throw new IllegalStateException("APP_JWT_SECRET is not set");
+            throw new IllegalStateException("JWT_SECRET is not set");
         }
         byte[] bytes = Base64.getDecoder().decode(secret.trim());
         if (bytes.length < 32) {
-            throw new IllegalStateException("APP_JWT_SECRET must be at least 32 bytes");
+            throw new IllegalStateException("JWT_SECRET must be at least 32 bytes");
         }
         key = Keys.hmacShaKeyFor(bytes);
         accessTtl = ConfigProvider.getLong(ConfigKeys.JWT_ACCESS_TTL_SECONDS);
