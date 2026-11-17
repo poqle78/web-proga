@@ -1,7 +1,7 @@
 package funn.j2k.web.auth.dto;
 
 public record TokenResponse (
-        String access,
-        String refresh
+        String accessToken,
+        String refreshToken
 ) {
 }

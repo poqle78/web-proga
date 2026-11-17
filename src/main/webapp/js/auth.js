@@ -1,47 +1,102 @@
+
 const Auth = (function () {
     const ACCESS_KEY = "accessToken";
     const REFRESH_KEY = "refreshToken";
     const AUTH_URL = "api/v1/auth";
 
+    const COOKIE_PATH = "/";
+    const COOKIE_SAME_SITE = "Lax";
+
     let refreshPromise = null;
 
+    // Получение cookie
+    function getCookie(name) {
+        const prefix = encodeURIComponent(name) + "=";
+        const cookie = document.cookie
+            .split("; ")
+            .find(item => item.startsWith(prefix));
+
+        return cookie
+            ? decodeURIComponent(cookie.substring(prefix.length))
+            : null;
+    }
+
+    // Определение времени жизни JWT по exp
+    function getTokenMaxAge(token, fallback) {
+        const payload = decodePayload(token);
+
+        if (payload && payload.exp) {
+            return Math.max(0, payload.exp - Math.floor(Date.now() / 1000));
+        }
+
+        return fallback;
+    }
+
+    // Сохранение cookie
+    function setCookie(name, value, maxAge) {
+        let cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
+        cookie += `; Path=${COOKIE_PATH}`;
+        cookie += `; Max-Age=${maxAge}`;
+        cookie += `; SameSite=${COOKIE_SAME_SITE}`;
+
+        if (location.protocol === "https:") {
+            cookie += "; Secure";
+        }
+
+        document.cookie = cookie;
+    }
 
     function getAccessToken() {
-        return localStorage.getItem(ACCESS_KEY);
+        return getCookie(ACCESS_KEY);
     }
 
     function getRefreshToken() {
-        return localStorage.getItem(REFRESH_KEY);
+        return getCookie(REFRESH_KEY);
     }
 
     function saveTokens(tokens) {
-        localStorage.setItem(ACCESS_KEY, tokens.accessToken);
-        localStorage.setItem(REFRESH_KEY, tokens.refreshToken);
+        if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
+            throw new Error("Сервер вернул некорректные токены");
+        }
+
+        const accessMaxAge = getTokenMaxAge(tokens.accessToken, 900);
+        const refreshMaxAge = getTokenMaxAge(tokens.refreshToken, 2592000);
+
+        if (accessMaxAge <= 0 || refreshMaxAge <= 0) {
+            throw new Error("Получены просроченные токены");
+        }
+
+        setCookie(ACCESS_KEY, tokens.accessToken, accessMaxAge);
+        setCookie(REFRESH_KEY, tokens.refreshToken, refreshMaxAge);
     }
 
     function clearTokens() {
-        localStorage.removeItem(ACCESS_KEY);
-        localStorage.removeItem(REFRESH_KEY);
+        setCookie(ACCESS_KEY, "", 0);
+        setCookie(REFRESH_KEY, "", 0);
     }
 
     function isLoggedIn() {
         return Boolean(getAccessToken() && getRefreshToken());
     }
 
-
-    // JWT состоит из трёх частей, разделённых точкой; вторая часть - JSON с данными (sub, role, exp...)
+    // Декодирование JWT
     function decodePayload(token) {
         try {
             const base64 = token.split(".")[1]
                 .replace(/-/g, "+")
                 .replace(/_/g, "/");
 
+            const normalized = base64.padEnd(
+                Math.ceil(base64.length / 4) * 4,
+                "="
+            );
+
             const json = decodeURIComponent(
-                atob(base64)
+                atob(normalized)
                     .split("")
-                    .map(function (char) {
-                        return "%" + ("00" + char.charCodeAt(0).toString(16)).slice(-2);
-                    })
+                    .map(char =>
+                        "%" + ("00" + char.charCodeAt(0).toString(16)).slice(-2)
+                    )
                     .join("")
             );
 
@@ -54,15 +109,11 @@ const Auth = (function () {
     function getUser() {
         const token = getAccessToken();
 
-        if (!token) {
-            return null;
-        }
+        if (!token) return null;
 
         const payload = decodePayload(token);
 
-        if (!payload) {
-            return null;
-        }
+        if (!payload) return null;
 
         return {
             username: payload.sub,
@@ -72,13 +123,11 @@ const Auth = (function () {
 
     function isAdmin() {
         const user = getUser();
-
         return Boolean(user && user.role === "ADMIN");
     }
 
-
     function redirectToLogin() {
-        window.location.replace("login.html");
+        window.location.replace("registration.html");
     }
 
     function logout() {
@@ -86,8 +135,6 @@ const Auth = (function () {
         redirectToLogin();
     }
 
-
-    // Бэкенд возвращает ошибки в виде {timestamp, status, error, message, details}
     async function buildError(response, fallbackMessage) {
         let data = null;
 
@@ -117,7 +164,6 @@ const Auth = (function () {
         });
     }
 
-
     async function login(usernameOrEmail, password) {
         const response = await postJson("/login", {
             login: usernameOrEmail,
@@ -133,9 +179,9 @@ const Auth = (function () {
 
     async function register(username, email, password) {
         const response = await postJson("/register", {
-            username: username,
-            email: email,
-            password: password
+            username,
+            email,
+            password
         });
 
         if (!response.ok) {
@@ -145,8 +191,7 @@ const Auth = (function () {
         return response.json();
     }
 
-
-    // Refresh-токен одноразовый (ротация), поэтому параллельные запросы ждут один общий refresh
+    // Один общий refresh для параллельных запросов
     function refreshTokens() {
         if (refreshPromise) {
             return refreshPromise;
@@ -161,7 +206,7 @@ const Auth = (function () {
         refreshPromise = (async function () {
             try {
                 const response = await postJson("/refresh", {
-                    refreshToken: refreshToken
+                    refreshToken
                 });
 
                 if (!response.ok) {
@@ -182,18 +227,20 @@ const Auth = (function () {
         return refreshPromise;
     }
 
-
-    // fetch с заголовком Authorization; при 401 один раз обновляет токены и повторяет запрос
+    // API-запросы с Authorization: Bearer
     async function apiFetch(url, options = {}) {
-        function send() {
-            const headers = Object.assign({}, options.headers || {});
+        async function send() {
+            const headers = new Headers(options.headers || {});
             const token = getAccessToken();
 
             if (token) {
-                headers["Authorization"] = "Bearer " + token;
+                headers.set("Authorization", "Bearer " + token);
             }
 
-            return fetch(url, Object.assign({}, options, { headers: headers }));
+            return fetch(url, {
+                ...options,
+                headers
+            });
         }
 
         let response = await send();
@@ -208,6 +255,7 @@ const Auth = (function () {
             if (!refreshed || response.status === 401) {
                 clearTokens();
                 redirectToLogin();
+
                 throw new Error("Сессия истекла, войдите заново");
             }
         }
@@ -215,19 +263,16 @@ const Auth = (function () {
         return response;
     }
 
-
     function renderUserBar() {
         const user = getUser();
 
-        if (!user) {
-            return;
-        }
+        if (!user) return;
 
         const bar = document.createElement("div");
         bar.classList.add("user-bar");
 
         const info = document.createElement("span");
-        info.textContent = user.username + " (" + user.role + ")";
+        info.textContent = `${user.username} (${user.role})`;
 
         const logoutButton = document.createElement("button");
         logoutButton.type = "button";
@@ -240,8 +285,6 @@ const Auth = (function () {
         document.body.insertBefore(bar, document.body.firstChild);
     }
 
-
-    // Вызывается в начале каждой страницы; false означает, что идёт редирект
     function initPage(options = {}) {
         if (!isLoggedIn()) {
             redirectToLogin();
@@ -258,16 +301,15 @@ const Auth = (function () {
         return true;
     }
 
-
     return {
-        isLoggedIn: isLoggedIn,
-        isAdmin: isAdmin,
-        getUser: getUser,
-        login: login,
-        register: register,
-        logout: logout,
-        apiFetch: apiFetch,
-        buildError: buildError,
-        initPage: initPage
+        isLoggedIn,
+        isAdmin,
+        getUser,
+        login,
+        register,
+        logout,
+        apiFetch,
+        buildError,
+        initPage
     };
 })();

@@ -1,3 +1,7 @@
+if (!Auth.initPage()) {
+    throw new Error("Пользователь не авторизован");
+}
+
 const studentForm = document.getElementById("student-form");
 
 const student_name = document.getElementById("fullName");
@@ -25,7 +29,7 @@ if (url.searchParams.get('isu')) {
 
         student_name.setAttribute('value', originalStudent.name);
         group.setAttribute('value', originalStudent.group);
-        ISU.setAttribute('value', originalStudent.isu);
+        isuInput.setAttribute('value', originalStudent.isu);
         dormNum.setAttribute('value', originalStudent.dormitory);
         room.setAttribute('value', originalStudent.room);
         const raw = originalStudent.check_in;
@@ -191,12 +195,8 @@ studentForm.addEventListener("submit", async function (event) {
 
     if (isEdit) {
         if (originalIsu !== data.isu) {
-            if (validateIsu) {
-                await createStudent(data);
-                await deleteStudent(originalIsu);
-            } else {
-
-            }
+            await createStudent(data);
+            await deleteStudent(originalIsu);
         } else {
             const changes = diffStudent(originalStudent, data);
             const count = Object.keys(changes).length;

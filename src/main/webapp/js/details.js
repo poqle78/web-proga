@@ -1,3 +1,7 @@
+if (!Auth.initPage()) {
+    throw new Error("Пользователь не авторизован");
+}
+
 const url = new URL(document.URL);
 if (url.searchParams.get('isu')) {
     (async () => {

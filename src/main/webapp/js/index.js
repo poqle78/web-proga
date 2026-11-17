@@ -1,3 +1,7 @@
+if (!Auth.initPage()) {
+  throw new Error("Пользователь не авторизован");
+}
+
 const filterRoomInput = document.getElementById("filterRoom");
 const filterIsuIdInput = document.getElementById("filterIsuId");
 const filterGroupInput = document.getElementById("filterGroup");

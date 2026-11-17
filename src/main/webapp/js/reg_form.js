@@ -37,17 +37,21 @@ function showError(message, input) {
     input.parentElement.appendChild(errorEl);
 }
 
+
 loginForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    clearErrors();
+
     try {
         await Auth.login(
             loginUsername.value.trim(),
             loginPassword.value
         );
 
-        location.href = 'index.html';
+        window.location.replace("index.html");
 
     } catch (error) {
-        showError(error, loginUsername);
+        showError(error.message, loginUsername);
     }
 });
 
@@ -61,13 +65,16 @@ registrationForm.addEventListener("submit", async function (event) {
     ];
 
     let isValid = true;
+
     for (const [input, validator] of checks) {
         const message = await validator();
+
         if (message) {
             showError(message, input);
             isValid = false;
         }
     }
+
     if (!isValid) return;
 
     const data = {
@@ -75,17 +82,26 @@ registrationForm.addEventListener("submit", async function (event) {
         regEmail: regEmail.value.trim(),
         regPassword: regPassword.value
     };
+
     try {
-        await Auth.register(data.regUsername, data.regEmail, data.regPassword);
+        await Auth.register(
+            data.regUsername,
+            data.regEmail,
+            data.regPassword
+        );
 
-        await Auth.login(data.regUsername, data.regPassword);
+        await Auth.login(
+            data.regUsername,
+            data.regPassword
+        );
 
-        location.href = 'index.html';
+        window.location.replace("index.html");
 
     } catch (error) {
-        showError(error, regUsername);
+        showError(error.message, regUsername);
     }
-})
+});
+
 
 function showForm(mode) {
     const isRegister = mode === "register";
