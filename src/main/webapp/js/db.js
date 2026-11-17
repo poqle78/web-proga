@@ -119,3 +119,21 @@ async function getAllStudent(filters = {}) {
         return []
     }
 }
+
+
+async function createUser(user) {
+    const json = await requestJSON('api/v1/auth/register/', {
+        method: "POST",
+        body: JSON.stringify(user)
+    });
+    return json;
+}
+
+
+async function loginUser(user) {
+    const json = await requestJSON('api/v1/auth/login/', {
+        method: "POST",
+        body: JSON.stringify(user)
+    });
+    return json;
+}
