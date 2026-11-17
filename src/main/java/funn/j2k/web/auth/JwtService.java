@@ -1,9 +1,12 @@
 package funn.j2k.web.auth;
 
-import funn.j2k.web.auth.dto.TokenResponse;
 import funn.j2k.web.config.ConfigKeys;
 import funn.j2k.web.config.ConfigProvider;
+import funn.j2k.web.exception.AuthenticationException;
+import funn.j2k.web.security.JwtPayload;
 import funn.j2k.web.user.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -11,16 +14,15 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @ApplicationScoped
 public class JwtService {
     private SecretKey key;
-    private String issuer;
     private long accessTtl;
     private long refreshTtl;
     private JwtParser parser;
@@ -69,19 +71,51 @@ public class JwtService {
                 .compact();
     }
 
-    public Optional<AuthenticatedUser> verify(String token) {
+    public JwtPayload parseAccess(String token) {
+        return parse(token, TYPE_ACCESS);
+    }
+
+    public JwtPayload parseRefresh(String token) {
+        return parse(token, TYPE_REFRESH);
+    }
+
+    private JwtPayload parse(String token, String expectedType) {
         try {
-            Claims claims = parser.parseSignedClaims(token).getPayload();
+            Claims claims = parser
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            String type = claims.get("type", String.class);
+            if (!expectedType.equals(type)) {
+                throw new AuthenticationException("Invalid token type");
+            }
+
             Set<String> roles = new HashSet<>();
             if (claims.get("roles") instanceof Collection<?> raw) {
                 raw.forEach(r -> roles.add(String.valueOf(r)));
             }
-            return Optional.of(new AuthenticatedUser(
-                    Long.valueOf(claims.getSubject()),
-                    claims.get("username", String.class),
-                    roles));
-        } catch (JwtException | IllegalArgumentException e) {   // подпись, срок, формат
-            return Optional.empty();
+
+            return new JwtPayload(
+                    claims.get("userId", Long.class),
+                    roles,
+                    type
+            );
+        } catch (JwtException | IllegalArgumentException ex) {
+            throw new AuthenticationException("Invalid or expired token");
         }
+    }
+
+    public String hashToken(String tokenRaw) {
+        try {
+            byte[] hash = MessageDigest.getInstance("SHA-256")
+                    .digest(tokenRaw.getBytes(StandardCharsets.UTF_8));
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    public long getRefreshTtlSeconds() {
+        return refreshTtl;
     }
 }
