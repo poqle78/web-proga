@@ -11,7 +11,7 @@ public record PatchStudentRequest(
         @Size(min=5) @Pattern(regexp="[A-Z][1-9][1-4]\\d{2}") String group,
         @Min(1) @Max(99) Integer dormitory,
         @Min(1) @Max(9999) Integer room,
-        @JsonbDateFormat("yyyy-MM-dd") @Past LocalDate check_in,
+        @JsonbDateFormat("yyyy-MM-dd") @PastOrPresent LocalDate check_in,
         Boolean is_foreigner,
         String notes
 ) {}
