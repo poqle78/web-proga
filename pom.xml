@@ -26,6 +26,7 @@
         <hibernate.version>7.4.14.Final</hibernate.version>
         <postgres.version>42.7.14</postgres.version>
         <jjwt.version>0.13.0</jjwt.version>
+        <swagger.version>2.2.55</swagger.version>
     </properties>
 
     <dependencies>

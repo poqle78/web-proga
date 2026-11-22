@@ -5,10 +5,12 @@
     </appProperties>
     <featureManager>
         <feature>webProfile-11.0</feature>
-        <feature>jdbc-4.3</feature>
-        <feature>bells-1.0</feature>
+        <feature>mpOpenAPI-4.0</feature>
+
         <feature>mpHealth-4.0</feature>
         <feature>appSecurity-6.0</feature>
+        <feature>jdbc-4.3</feature>
+        <feature>bells-1.0</feature>
     </featureManager>
 
     <bell libraryRef="hibernate"/>
