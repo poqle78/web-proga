@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>fun.j2k.shebik</groupId>
+    <groupId>funn.j2k.shebik</groupId>
     <artifactId>student-service</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>war</packaging>
@@ -84,34 +84,33 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${war-plugin.version}</version>
             </plugin>
-
             <plugin>
                 <groupId>io.openliberty.tools</groupId>
                 <artifactId>liberty-maven-plugin</artifactId>
                 <version>${liberty-plugin.version}</version>
                 <configuration>
-                <runtimeArtifact>
-                    <groupId>io.openliberty</groupId>
-                    <artifactId>openliberty-runtime</artifactId>
-                    <version>${liberty.version}</version>
-                    <type>zip</type>
-                </runtimeArtifact>
-                <copyDependencies>
-                    <dependencyGroup>
-                        <location>${project.build.directory}/liberty/wlp/usr/shared/resources/hibernate</location>
-                        <dependency>
-                            <groupId>org.hibernate.orm</groupId>
-                            <artifactId>hibernate-core</artifactId>
-                        </dependency>
-                    </dependencyGroup>
-                    <dependencyGroup>
-                        <location>${project.build.directory}/liberty/wlp/usr/shared/resources/postgresql</location>
-                        <dependency>
-                            <groupId>org.postgresql</groupId>
-                            <artifactId>postgresql</artifactId>
-                        </dependency>
-                    </dependencyGroup>
-                </copyDependencies>
+                    <runtimeArtifact>
+                        <groupId>io.openliberty</groupId>
+                        <artifactId>openliberty-runtime</artifactId>
+                        <version>${liberty.version}</version>
+                        <type>zip</type>
+                    </runtimeArtifact>
+                    <copyDependencies>
+                        <dependencyGroup>
+                            <location>${project.build.directory}/liberty/wlp/usr/shared/resources/hibernate</location>
+                            <dependency>
+                                <groupId>org.hibernate.orm</groupId>
+                                <artifactId>hibernate-core</artifactId>
+                            </dependency>
+                        </dependencyGroup>
+                        <dependencyGroup>
+                            <location>${project.build.directory}/liberty/wlp/usr/shared/resources/postgresql</location>
+                            <dependency>
+                                <groupId>org.postgresql</groupId>
+                                <artifactId>postgresql</artifactId>
+                            </dependency>
+                        </dependencyGroup>
+                    </copyDependencies>
                 </configuration>
             </plugin>
         </plugins>
