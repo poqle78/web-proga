@@ -75,9 +75,37 @@ public class AuthService {
         RefreshToken stored = new RefreshToken();
         stored.setUser(user);
         stored.setTokenHash(jwt.hashToken(refresh));
-        stored.setExpiresAt(Instant.now().plusSeconds(jwt.getRefreshTtlSeconds()));
+        stored.setExpiresAt(Instant.now().plusSeconds(jwt.getRefreshTtl()));
         refreshTokens.create(stored);
 
         return new TokenResponse(access, refresh);
+    }
+
+
+    @Transactional
+    public void logout(String refreshTokenRaw) {
+        if (
+                refreshTokenRaw == null ||
+                        refreshTokenRaw.isBlank()
+        ) {
+            return;
+        }
+
+        String hash =
+                jwt.hashToken(refreshTokenRaw);
+
+        refreshTokens
+                .findByHash(hash)
+                .ifPresent(
+                        refreshTokens::markRevoked
+                );
+    }
+
+    public long getRefreshTtl() {
+        return jwt.getRefreshTtl();
+    }
+
+    public long getAccessTtl() {
+        return jwt.getAccessTtl();
     }
 }

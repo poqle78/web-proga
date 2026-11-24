@@ -115,7 +115,11 @@ public class JwtService {
         }
     }
 
-    public long getRefreshTtlSeconds() {
+    public long getRefreshTtl() {
         return refreshTtl;
+    }
+
+    public long getAccessTtl() {
+        return accessTtl;
     }
 }

@@ -47,4 +47,14 @@ public class RefreshTokenRepository {
         em.persist(refreshToken);
         return refreshToken;
     }
+
+    public void markRevoked(RefreshToken refreshToken) {
+        em.createQuery("""
+                        update RefreshToken t
+                           set t.revokedAt = :now
+                         where t.tokenHash = :token and t.revokedAt is null""")
+                .setParameter("now", Instant.now())
+                .setParameter("token", refreshToken)
+                .executeUpdate();
+    }
 }
